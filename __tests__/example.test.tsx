@@ -3,10 +3,10 @@ import '@testing-library/jest-dom'
 
 /**
  * EXAMPLE TEST FILE
- * 
+ *
  * This shows you how to write tests in this project.
  * Use Copilot's /tests command to generate tests for your components!
- * 
+ *
  * See Module 2, Lesson 2.3 for more on writing tests with Copilot.
  */
 
@@ -44,20 +44,19 @@ describe('ExampleButton', () => {
 /* ==========================================
  * 💡 PRACTICE WITH COPILOT
  * ==========================================
- * 
+ *
  * Try these exercises:
- * 
+ *
  * 1. Create a new component in one of the module files
  * 2. Highlight the component code
  * 3. Use /tests to generate test cases
  * 4. Review and refine the generated tests
  * 5. Run: npm test
- * 
+ *
  * Copilot can help you write:
  * - Unit tests for functions
  * - Component tests for React components
  * - Integration tests for features
  * - Edge case tests
- * 
- * ========================================== */}
-
+ *
+ * ========================================== */
