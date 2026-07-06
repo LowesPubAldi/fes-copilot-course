@@ -137,35 +137,43 @@ export default function Module3Practice() {
   )
 }
 
+type User = {
+  id: number
+  name: string
+  email: string
+  phone: string
+  username: string
+  website: string
+}
+
 /* ==========================================
  * 🔄 PROMISE-BASED COMPONENT
  * Refactor this to use async/await!
  * ========================================== */
 function PromiseBasedComponent() {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // This uses .then() chains - convert it to async/await!
-  const fetchUserData = () => {
+  // Rewritten to use async/await
+  const fetchUserData = async () => {
     setLoading(true)
     setError(null)
 
-    fetch('https://jsonplaceholder.typicode.com/users/1')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        return response.json()
-      })
-      .then(userData => {
-        setData(userData)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err.message)
-        setLoading(false)
-      })
+    try {
+      const response = await fetch('https://jsonplaceholder.typicode.com/users/1')
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const userData = await response.json()
+      setData(userData)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -272,8 +280,9 @@ function InaccessibleForm() {
  * 🧹 MESSY COMPONENT
  * Refactor this into smaller, clearer functions!
  * ========================================== */
+
 function MessyComponent() {
-  const [items, setItems] = useState([
+  const [items] = useState([
     { id: 1, name: 'Apple', category: 'Fruit', price: 1.5, inStock: true },
     { id: 2, name: 'Banana', category: 'Fruit', price: 0.8, inStock: true },
     { id: 3, name: 'Carrot', category: 'Vegetable', price: 1.2, inStock: false },
@@ -299,9 +308,13 @@ function MessyComponent() {
     })
     .map(item => {
       const discountedPrice = item.price > 2 ? item.price * 0.9 : item.price
-      const formattedPrice = `$${discountedPrice.toFixed(2)}`
       const isOnSale = item.price > 2
-      return { ...item, discountedPrice, formattedPrice, isOnSale }
+      return {
+        ...item,
+        discountedPrice,
+        formattedPrice: `$${discountedPrice.toFixed(2)}`,
+        isOnSale,
+      }
     })
 
   return (
@@ -362,37 +375,11 @@ function MessyComponent() {
 function StylableComponent() {
   const [count, setCount] = useState(0)
 
-  // Inline styles - convert these to Tailwind!
-  const containerStyle = {
-    padding: '24px',
-    backgroundColor: '#f3f4f6',
-    borderRadius: '8px',
-    marginTop: '16px',
-  }
-
-  const buttonStyle = {
-    padding: '8px 16px',
-    backgroundColor: '#3B82F6',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    marginRight: '8px',
-  }
-
-  const textStyle = {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#1f2937',
-  }
-
-  // This could be optimized - ask Copilot how!
+  // Optimized: Gauss's formula replaces a million iterations with one calculation
+  // Sum of 0..n-1 = n * (n - 1) / 2
   const expensiveCalculation = () => {
-    let result = 0
-    for (let i = 0; i < 1000000; i++) {
-      result += i
-    }
-    return result
+    const n = 1000000
+    return (n * (n - 1)) / 2
   }
 
   return (
@@ -401,19 +388,20 @@ function StylableComponent() {
         This component uses inline styles and has performance issues. Improve it!
       </p>
 
-      <div style={containerStyle}>
-        <p style={textStyle}>Count: {count}</p>
-        <p style={{ color: '#6b7280', marginTop: '8px' }}>
-          Expensive calculation: {expensiveCalculation()}
-        </p>
+      <div className="p-6 bg-gray-100 rounded-lg mt-4">
+        <p className="text-2xl font-bold text-gray-800">Count: {count}</p>
+        <p className="text-gray-500 mt-2">Expensive calculation: {expensiveCalculation()}</p>
 
-        <div style={{ marginTop: '16px' }}>
-          <button style={buttonStyle} onClick={() => setCount(count + 1)}>
+        <div className="mt-4 space-x-2">
+          <button
+            onClick={() => setCount(count + 1)}
+            className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600"
+          >
             Increment
           </button>
           <button
-            style={{ ...buttonStyle, backgroundColor: '#EF4444' }}
             onClick={() => setCount(0)}
+            className="px-4 py-2 bg-red-500 text-white rounded cursor-pointer hover:bg-red-600"
           >
             Reset
           </button>

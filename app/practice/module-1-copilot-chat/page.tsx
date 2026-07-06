@@ -179,6 +179,7 @@ function ComplexFilter() {
           onChange={e => setMinPrice(Number(e.target.value))}
           className="px-4 py-2 border rounded"
         />
+        <label className="sr-only">Sort Order</label>
         <select
           value={sortOrder}
           onChange={e => setSortOrder(e.target.value as 'asc' | 'desc')}
