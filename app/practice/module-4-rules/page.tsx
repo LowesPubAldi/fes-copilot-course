@@ -1,5 +1,8 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
+
 /**
  * MODULE 4: Project Rules (Teaching Copilot Your Style)
  *
@@ -67,7 +70,6 @@ export default function Module4Practice() {
             <p className="text-sm text-gray-600 mb-4">
               Add a comment below and run the task with Copilot (Agent Mode):
             </p>
-
             <ul className="list-disc list-inside text-sm text-gray-700 mb-4 space-y-1">
               <li>
                 <code>
@@ -98,7 +100,6 @@ export default function Module4Practice() {
                 </code>
               </li>
             </ul>
-
             <p className="text-sm text-gray-600 mb-2">Expected (based on your rules):</p>
             <ul className="list-disc list-inside text-sm text-gray-700">
               <li>Arrow-function components</li>
@@ -107,8 +108,26 @@ export default function Module4Practice() {
               <li>Small, focused structure + brief comments for non-obvious logic</li>
               <li>Accessible markup for inputs and controls</li>
             </ul>
+          </div>
 
-            {/* Practice area for Copilot (Agent Mode) generation */}
+          {/* Components generated via Agent Mode to test rule adherence */}
+          <div className="mt-6 space-y-6">
+            <LoginForm />
+            <ProfileCard
+              name="Alex Johnson"
+              bio="Full-stack developer passionate about clean code and great UX. Open to new opportunities."
+              avatarUrl="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+              onContact={() => alert('Contact clicked!')}
+            />
+            <div className="flex gap-3 flex-wrap">
+              <PrimaryButton onClick={() => alert('Clicked!')}>Click Me</PrimaryButton>
+              <PrimaryButton type="submit">Submit</PrimaryButton>
+              <PrimaryButton disabled>Disabled</PrimaryButton>
+            </div>
+            <SearchBar
+              placeholder="Search users..."
+              onChange={value => console.log('Debounced search:', value)}
+            />
           </div>
         </section>
 
@@ -208,6 +227,234 @@ export default function Module4Practice() {
           </ul>
         </section>
       </div>
+    </div>
+  )
+}
+
+// Scaffold a LoginForm component with email, password, and submit button. Add client-side validation, Tailwind styling, and accessible labels.
+
+type LoginFormState = {
+  email: string
+  password: string
+}
+
+type LoginFormErrors = {
+  email?: string
+  password?: string
+}
+
+const validateLoginForm = (values: LoginFormState): LoginFormErrors => {
+  const errors: LoginFormErrors = {}
+  if (!values.email.trim()) {
+    errors.email = 'Email is required'
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+    errors.email = 'Please enter a valid email address'
+  }
+  if (!values.password) {
+    errors.password = 'Password is required'
+  } else if (values.password.length < 8) {
+    errors.password = 'Password must be at least 8 characters'
+  }
+  return errors
+}
+
+const LoginForm = () => {
+  const [values, setValues] = useState<LoginFormState>({ email: '', password: '' })
+  const [errors, setErrors] = useState<LoginFormErrors>({})
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValues(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    // Clear the field error as the user types
+    if (errors[e.target.name as keyof LoginFormErrors]) {
+      setErrors(prev => ({ ...prev, [e.target.name]: undefined }))
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const validationErrors = validateLoginForm(values)
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      return
+    }
+    setSubmitted(true)
+    console.log('Login submitted:', values)
+  }
+
+  if (submitted) {
+    return (
+      <div role="alert" className="p-4 bg-green-100 text-green-800 rounded-lg">
+        Logged in successfully!
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} noValidate aria-label="Login form" className="space-y-4 max-w-sm">
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          Email address
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          aria-required="true"
+          aria-describedby={errors.email ? 'email-error' : undefined}
+          value={values.email}
+          onChange={handleChange}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.email ? 'border-red-500' : 'border-gray-300'
+          }`}
+          placeholder="you@example.com"
+        />
+        {errors.email && (
+          <p id="email-error" role="alert" className="mt-1 text-sm text-red-600">
+            {errors.email}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          aria-required="true"
+          aria-describedby={errors.password ? 'password-error' : undefined}
+          value={values.password}
+          onChange={handleChange}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.password ? 'border-red-500' : 'border-gray-300'
+          }`}
+          placeholder="Min. 8 characters"
+        />
+        {errors.password && (
+          <p id="password-error" role="alert" className="mt-1 text-sm text-red-600">
+            {errors.password}
+          </p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className="w-full px-4 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Sign in
+      </button>
+    </form>
+  )
+}
+
+// Build a ProfileCard with avatar image, name, bio, and a "Contact" button. Keep layout responsive and concise.
+
+type ProfileCardProps = {
+  name: string
+  bio: string
+  avatarUrl: string
+  onContact: () => void
+}
+
+const ProfileCard = ({ name, bio, avatarUrl, onContact }: ProfileCardProps) => (
+  <div className="flex flex-col sm:flex-row items-center gap-4 p-5 bg-white rounded-xl shadow border border-gray-100 max-w-sm">
+    <Image
+      src={avatarUrl}
+      alt={`${name}'s avatar`}
+      width={80}
+      height={80}
+      unoptimized
+      className="w-20 h-20 rounded-full object-cover flex-shrink-0 bg-gray-100"
+    />
+    <div className="text-center sm:text-left space-y-2 flex-1">
+      <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
+      <p className="text-sm text-gray-600 leading-relaxed">{bio}</p>
+      <button
+        onClick={onContact}
+        aria-label={`Contact ${name}`}
+        className="px-4 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Contact
+      </button>
+    </div>
+  </div>
+)
+
+// Create a PrimaryButton component (props: children, onClick, type?). Apply our standard Tailwind button style.
+
+type PrimaryButtonProps = {
+  children: React.ReactNode
+  onClick?: () => void
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
+}
+
+const PrimaryButton = ({
+  children,
+  onClick,
+  type = 'button',
+  disabled = false,
+}: PrimaryButtonProps) => (
+  <button
+    type={type}
+    onClick={onClick}
+    disabled={disabled}
+    className="px-4 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+  >
+    {children}
+  </button>
+)
+
+// Implement a simple SearchBar with input, clear button, and debounced onChange callback (300ms).
+
+type SearchBarProps = {
+  placeholder?: string
+  onChange: (value: string) => void
+}
+
+const SearchBar = ({ placeholder = 'Search...', onChange }: SearchBarProps) => {
+  const [query, setQuery] = useState('')
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Debounce: wait 300ms after the user stops typing before firing onChange
+  useEffect(() => {
+    debounceTimer.current = setTimeout(() => onChange(query), 300)
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    }
+  }, [query, onChange])
+
+  const handleClear = () => setQuery('')
+
+  return (
+    <div className="relative flex items-center max-w-sm">
+      <label htmlFor="search-input" className="sr-only">
+        {placeholder}
+      </label>
+      <input
+        id="search-input"
+        type="search"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder={placeholder}
+        aria-label={placeholder}
+        className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      {/* Clear button only visible when there is text */}
+      {query && (
+        <button
+          onClick={handleClear}
+          aria-label="Clear search"
+          className="absolute right-2 text-gray-400 hover:text-gray-600 focus:outline-none"
+        >
+          ✕
+        </button>
+      )}
     </div>
   )
 }
