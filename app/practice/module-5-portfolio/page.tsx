@@ -53,6 +53,7 @@ interface Project {
   techStack: string[]
   liveLink: string
   githubLink: string
+  glow?: { color: string; direction: string }
 }
 
 interface ContactFormData {
@@ -79,6 +80,7 @@ const projects: Project[] = [
     techStack: ['React', 'JavaScript', 'Tailwind CSS'],
     liveLink: '#',
     githubLink: '#',
+    glow: { color: '#22d3ee', direction: '-6px -6px 28px' },
   },
   {
     id: 2,
@@ -88,6 +90,7 @@ const projects: Project[] = [
     techStack: ['React', 'JavaScript', 'TMDB API', 'CSS'],
     liveLink: '#',
     githubLink: '#',
+    glow: { color: '#7c3aed', direction: '6px -6px 28px' },
   },
   {
     id: 3,
@@ -97,6 +100,7 @@ const projects: Project[] = [
     techStack: ['React', 'TypeScript', 'REST API', 'CSS'],
     liveLink: '#',
     githubLink: '#',
+    glow: { color: '#d97706', direction: '-6px 6px 28px' },
   },
   {
     id: 4,
@@ -106,6 +110,7 @@ const projects: Project[] = [
     techStack: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
     liveLink: '#',
     githubLink: '#',
+    glow: { color: '#65a30d', direction: '6px 6px 28px' },
   },
   {
     id: 5,
@@ -115,6 +120,7 @@ const projects: Project[] = [
     techStack: ['React', 'Next.js', 'TypeScript', 'Firebase', 'Stripe'],
     liveLink: '#',
     githubLink: '#',
+    glow: { color: '#dc2626', direction: '-6px -6px 28px' },
   },
 ]
 
@@ -131,7 +137,11 @@ const Header = ({
 
   return (
     <header
-      className={`fixed top-0 w-full shadow-lg z-50 ${isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-900 text-white'}`}
+      className={`fixed top-0 w-full shadow-lg z-50 ${isDarkMode ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white'}`}
+      style={{
+        backgroundSize: '200% 200%',
+        animation: 'breatheBackground 5s ease-in-out infinite',
+      }}
     >
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
         <div className="text-lg font-bold tracking-tight w-44 shrink-0">Josh Van Minsel</div>
@@ -164,7 +174,7 @@ const Header = ({
 
 // ===== Component: Halo Rings Animation =====
 
-const HaloRings = ({ opacity }: { opacity: number }) => {
+const HaloRings = ({ opacity, isPulsing }: { opacity: number; isPulsing: boolean }) => {
   const ringStyle = `
     @keyframes rotateRing1 {
       from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
@@ -235,14 +245,31 @@ const HaloRings = ({ opacity }: { opacity: number }) => {
               cy="100"
               r="80"
               fill="none"
-              stroke="#2d6a4f"
+              stroke={isPulsing ? '#22d3ee' : '#2d6a4f'}
               strokeWidth="6"
               strokeLinecap="round"
               opacity={opacity}
+              style={{
+                transition: isPulsing ? 'stroke 0.05s ease' : 'stroke 0.4s ease-out',
+                filter: isPulsing ? 'drop-shadow(0 0 6px rgba(34,211,238,0.9))' : 'none',
+              }}
             />
           </svg>
         </div>
       ))}
+      {/* Pulse overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(34,211,238,0.25) 0%, rgba(34,211,238,0.1) 50%, transparent 70%)',
+          opacity: isPulsing ? 1 : 0,
+          transition: isPulsing ? 'opacity 0.05s ease' : 'opacity 0.45s ease-out',
+          pointerEvents: 'none',
+        }}
+      />
     </div>
   )
 }
@@ -252,6 +279,16 @@ const HaloRings = ({ opacity }: { opacity: number }) => {
 const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const ringsContainerRef = useRef<HTMLDivElement>(null)
   const [ringsOpacity, setRingsOpacity] = useState(1)
+  const [isPulsing, setIsPulsing] = useState(false)
+
+  useEffect(() => {
+    const handleClick = () => {
+      setIsPulsing(true)
+      setTimeout(() => setIsPulsing(false), 500)
+    }
+    window.addEventListener('click', handleClick)
+    return () => window.removeEventListener('click', handleClick)
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -316,7 +353,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
         }
       `}</style>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 50 }, (_, i) => (
+        {Array.from({ length: 120 }, (_, i) => (
           <div
             key={i}
             style={{
@@ -361,7 +398,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           className="hidden lg:flex flex-1 justify-center items-center"
           style={{ width: '320px', height: '320px' }}
         >
-          <HaloRings opacity={ringsOpacity} />
+          <HaloRings opacity={ringsOpacity} isPulsing={isPulsing} />
         </div>
       </div>
     </section>
@@ -371,11 +408,15 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
 // ===== Component: Project Card =====
 
 const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: boolean }) => {
+  const glowStyle = project.glow
+    ? { boxShadow: `inset ${project.glow.direction} 0px ${project.glow.color}` }
+    : {}
   return (
     <div
-      className={`rounded-lg shadow-md hover:shadow-xl transition-shadow p-6 ${
+      className={`rounded-lg p-6 transition-all duration-300 ${
         isDarkMode ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-900'
       }`}
+      style={glowStyle}
     >
       <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
         {project.title}
@@ -434,8 +475,34 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <section
       id="projects"
-      className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-900' : 'bg-slate-50'}`}
+      className={`relative py-14 px-4 sm:px-6 lg:px-8 ${
+        isDarkMode
+          ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
+          : 'bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 text-slate-900'
+      }`}
+      style={{
+        backgroundSize: '200% 200%',
+        animation: 'breatheBackground 5s ease-in-out infinite',
+      }}
     >
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 300 }, (_, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: `${(i * 83.7 + (i % 7) * 31.2) % 100}%`,
+              top: `${(i * 61.4 + (i % 5) * 47.8) % 100}%`,
+              width: `${(i % 4) * 0.6 + 0.4}px`,
+              height: `${(i % 4) * 0.6 + 0.4}px`,
+              borderRadius: '50%',
+              backgroundColor: isDarkMode ? '#ffffff' : '#1e293b',
+              opacity: (i % 7) * 0.08 + 0.2,
+              boxShadow: isDarkMode ? '0 0 2px rgba(255,255,255,0.4)' : 'none',
+            }}
+          />
+        ))}
+      </div>
       <div className="max-w-6xl mx-auto">
         <h2
           className={`text-3xl sm:text-4xl font-bold mb-8 text-center ${
@@ -732,24 +799,6 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
           <div>
             <label
-              htmlFor="subject"
-              className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}
-            >
-              Subject
-            </label>
-            <input
-              type="text"
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-50 text-slate-900 border-slate-300 focus:ring-blue-500 focus:border-transparent'}`}
-              placeholder="What's this about?"
-            />
-          </div>
-
-          <div>
-            <label
               htmlFor="message"
               className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-900'}`}
             >
@@ -838,6 +887,125 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
   )
 }
 
+// ===== Component: Scope Cursor =====
+
+const ScopeCursor = () => {
+  const [pos, setPos] = useState({ x: -100, y: -100 })
+  const [isHovering, setIsHovering] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      setPos({ x: e.clientX, y: e.clientY })
+      setIsVisible(true)
+    }
+    const handleOver = (e: MouseEvent) => {
+      const target = e.target as Element
+      setIsHovering(!!target.closest('a, button'))
+    }
+    const handleLeave = () => setIsVisible(false)
+
+    window.addEventListener('mousemove', handleMove)
+    window.addEventListener('mouseover', handleOver)
+    document.documentElement.addEventListener('mouseleave', handleLeave)
+    return () => {
+      window.removeEventListener('mousemove', handleMove)
+      window.removeEventListener('mouseover', handleOver)
+      document.documentElement.removeEventListener('mouseleave', handleLeave)
+    }
+  }, [])
+
+  const color = isHovering ? '#22d3ee' : '#2d6a4f'
+
+  return (
+    <>
+      <style>{`@media (pointer: fine) { * { cursor: none !important; } }`}</style>
+      <div
+        style={{
+          position: 'fixed',
+          left: pos.x,
+          top: pos.y,
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          zIndex: 9999,
+          opacity: isVisible ? 1 : 0,
+          transition: 'opacity 0.2s ease',
+        }}
+      >
+        <svg
+          width={40}
+          height={40}
+          viewBox="0 0 40 40"
+          style={{
+            transition: 'transform 0.15s ease, filter 0.15s ease',
+            transform: isHovering ? 'scale(1.35)' : 'scale(1)',
+            filter: isHovering
+              ? 'drop-shadow(0 0 5px rgba(34,211,238,0.8))'
+              : 'drop-shadow(0 0 3px rgba(45,106,79,0.6))',
+          }}
+        >
+          {/* Outer ring */}
+          <circle
+            cx="20"
+            cy="20"
+            r="9"
+            fill="none"
+            stroke={color}
+            strokeWidth="1.5"
+            style={{ transition: 'stroke 0.15s ease' }}
+          />
+          {/* Center dot */}
+          <circle cx="20" cy="20" r="1.5" fill={color} style={{ transition: 'fill 0.15s ease' }} />
+          {/* Top tick */}
+          <line
+            x1="20"
+            y1="5"
+            x2="20"
+            y2="9"
+            stroke={color}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            style={{ transition: 'stroke 0.15s ease' }}
+          />
+          {/* Bottom tick */}
+          <line
+            x1="20"
+            y1="31"
+            x2="20"
+            y2="35"
+            stroke={color}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            style={{ transition: 'stroke 0.15s ease' }}
+          />
+          {/* Left tick */}
+          <line
+            x1="5"
+            y1="20"
+            x2="9"
+            y2="20"
+            stroke={color}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            style={{ transition: 'stroke 0.15s ease' }}
+          />
+          {/* Right tick */}
+          <line
+            x1="31"
+            y1="20"
+            x2="35"
+            y2="20"
+            stroke={color}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            style={{ transition: 'stroke 0.15s ease' }}
+          />
+        </svg>
+      </div>
+    </>
+  )
+}
+
 // ===== Main Portfolio Component =====
 
 export default function Module5Portfolio() {
@@ -847,6 +1015,7 @@ export default function Module5Portfolio() {
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
+      <ScopeCursor />
       <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       <main>
         <HeroSection isDarkMode={isDarkMode} />
