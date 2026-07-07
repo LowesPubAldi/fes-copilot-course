@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import emailjs from '@emailjs/browser'
 import {
   SiReact,
@@ -53,6 +54,7 @@ interface Project {
   techStack: string[]
   liveLink: string
   githubLink: string
+  thumbnail?: string
   glow?: { color: string; direction: string }
 }
 
@@ -78,8 +80,9 @@ const projects: Project[] = [
     description:
       'A pixel-perfect React landing page built from a professional Figma design. Demonstrates component architecture, responsive layouts, and clean UI implementation.',
     techStack: ['React', 'JavaScript', 'Tailwind CSS'],
-    liveLink: '#',
-    githubLink: '#',
+    liveLink: 'https://module-3-project-final.vercel.app/',
+    githubLink: 'https://github.com/LowesPubAldi/Module-3-Project-Final',
+    thumbnail: '/images/treact-thumbnail.svg',
     glow: { color: '#22d3ee', direction: '-6px -6px 28px' },
   },
   {
@@ -411,9 +414,10 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
   const glowStyle = project.glow
     ? { boxShadow: `inset ${project.glow.direction} 0px ${project.glow.color}` }
     : {}
+
   return (
     <div
-      className={`rounded-lg p-6 transition-all duration-300 ${
+      className={`relative rounded-lg p-6 transition-all duration-300 ${
         isDarkMode ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-900'
       }`}
       style={glowStyle}
@@ -440,10 +444,10 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
           ))}
         </div>
       </div>
-      <div className="flex gap-4">
+      <div className="flex items-center gap-4">
         <a
           href={project.liveLink}
-          className={`px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+          className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
             isDarkMode
               ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-400 active:bg-yellow-600 focus:ring-yellow-400 focus:ring-offset-slate-800'
               : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500'
@@ -452,17 +456,30 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
         >
           Live Demo
         </a>
-        <a
-          href={project.githubLink}
-          className={`px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-            isDarkMode
-              ? 'bg-slate-600 text-white hover:bg-slate-500 active:bg-slate-700 focus:ring-slate-400 focus:ring-offset-slate-800'
-              : 'bg-slate-700 text-white hover:bg-slate-800 active:bg-slate-900 focus:ring-slate-500'
-          }`}
-          aria-label={`View GitHub repository for ${project.title}`}
-        >
-          GitHub
-        </a>
+        <div className="relative group inline-flex items-center">
+          {project.thumbnail && (
+            <div className="pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-64 overflow-hidden rounded-md border border-cyan-400/50 bg-slate-950/95 shadow-2xl opacity-0 translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 md:block">
+              <Image
+                src={project.thumbnail}
+                alt={`${project.title} project thumbnail`}
+                width={1200}
+                height={630}
+                className="h-36 w-full object-cover"
+              />
+            </div>
+          )}
+          <a
+            href={project.githubLink}
+            className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              isDarkMode
+                ? 'bg-slate-600 text-white hover:bg-slate-500 active:bg-slate-700 focus:ring-slate-400 focus:ring-offset-slate-800'
+                : 'bg-slate-700 text-white hover:bg-slate-800 active:bg-slate-900 focus:ring-slate-500'
+            }`}
+            aria-label={`View GitHub repository for ${project.title}`}
+          >
+            GitHub
+          </a>
+        </div>
       </div>
     </div>
   )
@@ -511,19 +528,21 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
         >
           Featured Projects
         </h2>
-        <ul ref={ref} className="flex flex-col items-center gap-6 max-w-3xl mx-auto">
-          {projects.map((project, index) => (
-            <li
-              key={project.id}
-              className={`w-full transition-all duration-700 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-              style={{ transitionDelay: isVisible ? `${index * 120}ms` : '0ms' }}
-            >
-              <ProjectCard project={project} isDarkMode={isDarkMode} />
-            </li>
-          ))}
-        </ul>
+        <div ref={ref}>
+          <ul className="flex flex-col items-center gap-6 max-w-3xl mx-auto">
+            {projects.map((project, index) => (
+              <li
+                key={project.id}
+                className={`w-full transition-all duration-700 ${
+                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
+                style={{ transitionDelay: isVisible ? `${index * 120}ms` : '0ms' }}
+              >
+                <ProjectCard project={project} isDarkMode={isDarkMode} />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )
@@ -841,11 +860,18 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
 const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const socialLinks = [
+    { name: 'Email', url: 'mailto:jovanminsel@gmail.com', ariaLabel: 'Send an email' },
     { name: 'GitHub', url: 'https://github.com/LowesPubAldi', ariaLabel: 'Visit GitHub profile' },
     {
       name: 'LinkedIn',
       url: 'https://www.linkedin.com/in/joshua-vanminsel-628910107/',
       ariaLabel: 'Visit LinkedIn profile',
+    },
+    { name: 'Resume', url: '#', ariaLabel: 'View resume' },
+    {
+      name: 'Book a Call',
+      url: '#',
+      ariaLabel: 'Book a call via Calendly or Zoom',
     },
   ]
 
