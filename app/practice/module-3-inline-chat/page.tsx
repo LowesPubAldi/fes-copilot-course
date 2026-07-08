@@ -227,46 +227,55 @@ function InaccessibleForm() {
         navigation!
       </p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            Name
+          </label>
           <input
             type="text"
+            id="name"
+            aria-label="Name"
             placeholder="Name"
             value={formData.name}
             onChange={e => setFormData({ ...formData, name: e.target.value })}
-            style={{ border: '1px solid #ccc', padding: '8px', width: '100%' }}
+            className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
-        <div style={{ marginTop: '12px' }}>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            Email
+          </label>
           <input
             type="text"
+            id="email"
+            aria-label="Email"
             placeholder="Email"
             value={formData.email}
             onChange={e => setFormData({ ...formData, email: e.target.value })}
-            style={{ border: '1px solid #ccc', padding: '8px', width: '100%' }}
+            className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
-        <div style={{ marginTop: '12px' }}>
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+            Message
+          </label>
           <textarea
+            id="message"
+            aria-label="Message"
             placeholder="Message"
             value={formData.message}
             onChange={e => setFormData({ ...formData, message: e.target.value })}
-            style={{ border: '1px solid #ccc', padding: '8px', width: '100%', minHeight: '100px' }}
+            className="w-full border border-gray-300 px-3 py-2 rounded-md min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
-        <div style={{ marginTop: '12px' }}>
+        <div>
           <button
             type="submit"
-            style={{
-              background: '#3B82F6',
-              color: 'white',
-              padding: '8px 16px',
-              border: 'none',
-              borderRadius: '4px',
-            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Submit
           </button>
@@ -325,7 +334,11 @@ function MessyComponent() {
       </p>
 
       <div className="grid grid-cols-2 gap-4">
+        <label htmlFor="category-filter" className="sr-only">
+          Filter by category
+        </label>
         <select
+          id="category-filter"
           value={filter}
           onChange={e => setFilter(e.target.value)}
           className="px-4 py-2 border rounded"
@@ -335,7 +348,11 @@ function MessyComponent() {
           <option value="Vegetable">Vegetable</option>
         </select>
 
+        <label htmlFor="sort-order" className="sr-only">
+          Sort items
+        </label>
         <select
+          id="sort-order"
           value={sort}
           onChange={e => setSort(e.target.value)}
           className="px-4 py-2 border rounded"

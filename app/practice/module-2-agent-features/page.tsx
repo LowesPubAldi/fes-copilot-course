@@ -301,14 +301,22 @@ function UserDashboard() {
       </p>
 
       <div className="grid grid-cols-2 gap-4">
+        <label className="sr-only" htmlFor="search-users">
+          Search users
+        </label>
         <input
           type="text"
+          id="search-users"
           placeholder="Search users..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           className="px-4 py-2 border rounded"
         />
+        <label className="sr-only" htmlFor="user-status-filter">
+          Filter users by status
+        </label>
         <select
+          id="user-status-filter"
           value={filter}
           onChange={e => setFilter(e.target.value)}
           className="px-4 py-2 border rounded"

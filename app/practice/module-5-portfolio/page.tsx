@@ -15,7 +15,7 @@ import {
   SiFirebase,
 } from 'react-icons/si'
 import { MdPhoneIphone } from 'react-icons/md'
-import { FaCss3Alt } from 'react-icons/fa'
+import { FaCss3Alt, FaFlask } from 'react-icons/fa'
 
 // ===== EmailJS Config =====
 
@@ -53,8 +53,8 @@ interface Project {
   completed: string
   description: string
   techStack: string[]
-  liveLink: string
-  githubLink: string
+  liveLink?: string
+  githubLink?: string
   thumbnail?: string
   glow?: { color: string; direction: string }
 }
@@ -146,11 +146,7 @@ const Header = ({
 
   return (
     <header
-      className={`fixed top-0 w-full shadow-lg z-50 ${isDarkMode ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white'}`}
-      style={{
-        backgroundSize: '200% 200%',
-        animation: 'breatheBackground 5s ease-in-out infinite',
-      }}
+      className={`portfolio-breathe-bg fixed top-0 w-full shadow-lg z-50 ${isDarkMode ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white'}`}
     >
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
         <div className="text-lg font-bold tracking-tight w-44 shrink-0">Josh Van Minsel</div>
@@ -181,8 +177,6 @@ const Header = ({
   )
 }
 
-// ===== Component: Halo Rings Animation =====
-
 const HaloRings = ({
   opacity,
   isPulsing,
@@ -194,72 +188,32 @@ const HaloRings = ({
   scale: number
   offsetY: number
 }) => {
-  const ringStyle = `
-    @keyframes rotateRing1 {
-      from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-      to { transform: rotateX(360deg) rotateY(180deg) rotateZ(0deg); }
-    }
-    @keyframes rotateRing2 {
-      from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-      to { transform: rotateX(180deg) rotateY(360deg) rotateZ(90deg); }
-    }
-    @keyframes rotateRing3 {
-      from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-      to { transform: rotateX(360deg) rotateY(0deg) rotateZ(180deg); }
-    }
-    @keyframes rotateRing4 {
-      from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-      to { transform: rotateX(180deg) rotateY(180deg) rotateZ(270deg); }
-    }
-    @keyframes rotateRing5 {
-      from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-      to { transform: rotateX(270deg) rotateY(270deg) rotateZ(180deg); }
-    }
-    @keyframes rotateRing6 {
-      from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-      to { transform: rotateX(90deg) rotateY(360deg) rotateZ(90deg); }
-    }
-    @keyframes rotateRing7 {
-      from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-      to { transform: rotateX(360deg) rotateY(270deg) rotateZ(270deg); }
-    }
-  `
+  const ringsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const element = ringsRef.current
+    if (!element) return
+
+    element.style.setProperty('--halo-opacity', String(opacity))
+    element.style.setProperty('--halo-scale', String(scale))
+    element.style.setProperty('--halo-offset-y', `${offsetY}px`)
+  }, [opacity, scale, offsetY])
 
   return (
     <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        perspective: '1200px',
-        opacity,
-        transform: `translateY(${offsetY}px) scale(${scale})`,
-        transformOrigin: 'center center',
-        transition: 'opacity 0.3s ease-out, transform 0.35s ease-out',
-      }}
+      ref={ringsRef}
+      className={`portfolio-halo-rings relative h-full w-full [perspective:1200px] origin-center transition-[opacity,transform] duration-300 ease-out ${isPulsing ? 'portfolio-halo-rings--pulsing' : ''}`}
     >
       {[0, 1, 2, 3, 4, 5, 6].map(i => (
         <div
           key={i}
-          style={{
-            position: 'absolute',
-            width: '200px',
-            height: '200px',
-            left: '50%',
-            top: '50%',
-            transform: `translate(-50%, -50%) rotateX(${(i * 51.43).toFixed(2)}deg)`,
-            transformStyle: 'preserve-3d',
-          }}
+          className={`portfolio-halo-ring portfolio-halo-ring-${i + 1} absolute left-1/2 top-1/2 h-[200px] w-[200px] -translate-x-1/2 -translate-y-1/2 [transform-style:preserve-3d]`}
         >
           <svg
             width="200"
             height="200"
             viewBox="0 0 200 200"
-            style={{
-              animation: `rotateRing${i + 1} 5s linear infinite`,
-              transformStyle: 'preserve-3d',
-              display: 'block',
-            }}
+            className={`portfolio-halo-ring-svg block [transform-style:preserve-3d] portfolio-halo-ring-svg-${i + 1}`}
           >
             <circle
               cx="100"
@@ -297,59 +251,131 @@ const HaloRings = ({
             opacity: 0;
           }
         }
+
+        .portfolio-halo-rings {
+          opacity: var(--halo-opacity, 1);
+          transform: translateY(var(--halo-offset-y, 0px)) scale(var(--halo-scale, 1));
+          transform-origin: center center;
+        }
+
+        .portfolio-halo-ring {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform-style: preserve-3d;
+        }
+
+        .portfolio-halo-ring-1 {
+          transform: translate(-50%, -50%) rotateX(0deg);
+        }
+
+        .portfolio-halo-ring-2 {
+          transform: translate(-50%, -50%) rotateX(51.43deg);
+        }
+
+        .portfolio-halo-ring-3 {
+          transform: translate(-50%, -50%) rotateX(102.86deg);
+        }
+
+        .portfolio-halo-ring-4 {
+          transform: translate(-50%, -50%) rotateX(154.29deg);
+        }
+
+        .portfolio-halo-ring-5 {
+          transform: translate(-50%, -50%) rotateX(205.72deg);
+        }
+
+        .portfolio-halo-ring-6 {
+          transform: translate(-50%, -50%) rotateX(257.15deg);
+        }
+
+        .portfolio-halo-ring-7 {
+          transform: translate(-50%, -50%) rotateX(308.58deg);
+        }
+
+        .portfolio-halo-ring-svg-1 { animation: rotateRing1 5s linear infinite; }
+        .portfolio-halo-ring-svg-2 { animation: rotateRing2 5s linear infinite; }
+        .portfolio-halo-ring-svg-3 { animation: rotateRing3 5s linear infinite; }
+        .portfolio-halo-ring-svg-4 { animation: rotateRing4 5s linear infinite; }
+        .portfolio-halo-ring-svg-5 { animation: rotateRing5 5s linear infinite; }
+        .portfolio-halo-ring-svg-6 { animation: rotateRing6 5s linear infinite; }
+        .portfolio-halo-ring-svg-7 { animation: rotateRing7 5s linear infinite; }
+
+        .portfolio-halo-ring circle {
+          opacity: var(--halo-opacity, 1);
+        }
+
+        .portfolio-halo-center-dot,
+        .portfolio-halo-center-wave,
+        .portfolio-halo-center-pulse {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          pointer-events: none;
+        }
+
+        .portfolio-halo-center-dot {
+          width: 3px;
+          height: 3px;
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          background-color: #22d3ee;
+          box-shadow: 0 0 6px rgba(34,211,238,0.95);
+          opacity: 0;
+          transition: opacity 0.45s ease-out;
+        }
+
+        .portfolio-halo-rings--pulsing .portfolio-halo-center-dot {
+          opacity: 1;
+          transition-duration: 0.05s;
+        }
+
+        .portfolio-halo-center-pulse {
+          width: 170vmax;
+          height: 170vmax;
+          border-radius: 50%;
+          border: 2.5px solid rgba(34,211,238,0.95);
+          box-shadow: 0 0 22px rgba(34,211,238,0.55);
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+        }
+
+        .portfolio-halo-rings--pulsing .portfolio-halo-center-pulse {
+          animation: centerFirePulse 0.6s ease-out;
+        }
+
+        .portfolio-halo-center-wave {
+          width: 170vmax;
+          height: 170vmax;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(34,211,238,0.18) 0%, rgba(34,211,238,0.08) 18%, rgba(34,211,238,0.03) 40%, transparent 70%);
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+        }
+
+        .portfolio-halo-rings--pulsing .portfolio-halo-center-wave {
+          animation: centerFireWaveFill 0.6s ease-out;
+        }
       `}</style>
 
-      {/* Center flash */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: '3px',
-          height: '3px',
-          borderRadius: '50%',
-          transform: 'translate(-50%, -50%)',
-          backgroundColor: '#22d3ee',
-          boxShadow: '0 0 6px rgba(34,211,238,0.95)',
-          opacity: isPulsing ? 1 : 0,
-          transition: isPulsing ? 'opacity 0.05s ease' : 'opacity 0.45s ease-out',
-          pointerEvents: 'none',
-        }}
-      />
+      <div className="portfolio-halo-center-dot" />
+      <div className="portfolio-halo-center-pulse" />
+      <div className="portfolio-halo-center-wave" />
+    </div>
+  )
+}
 
-      {/* Outgoing pulse from center */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: '170vmax',
-          height: '170vmax',
-          borderRadius: '50%',
-          border: '2.5px solid rgba(34,211,238,0.95)',
-          boxShadow: '0 0 22px rgba(34,211,238,0.55)',
-          transform: 'translate(-50%, -50%) scale(0)',
-          animation: isPulsing ? 'centerFirePulse 0.6s ease-out' : 'none',
-          pointerEvents: 'none',
-        }}
-      />
+const StarField = ({ className = '' }: { className?: string }) => {
+  const starSlots = Array.from({ length: 24 }, (_, index) => index + 1)
 
-      {/* Soft expanding wave fill */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: '170vmax',
-          height: '170vmax',
-          borderRadius: '50%',
-          background:
-            'radial-gradient(circle, rgba(34,211,238,0.18) 0%, rgba(34,211,238,0.08) 18%, rgba(34,211,238,0.03) 40%, transparent 70%)',
-          transform: 'translate(-50%, -50%) scale(0)',
-          animation: isPulsing ? 'centerFireWaveFill 0.6s ease-out' : 'none',
-          pointerEvents: 'none',
-        }}
-      />
+  return (
+    <div className={`portfolio-starfield z-0 ${className}`} aria-hidden="true">
+      {starSlots.map(index => (
+        <span
+          key={index}
+          className={`portfolio-star portfolio-star-slot-${index} ${index % 2 === 0 ? 'portfolio-star--fast' : 'portfolio-star--slow'}`}
+        />
+      ))}
     </div>
   )
 }
@@ -420,15 +446,11 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
     <section
       ref={heroSectionRef}
       id="home"
-      className={`relative pt-20 pb-8 px-4 sm:px-6 lg:px-8 text-left ${
+      className={`portfolio-breathe-bg relative pt-20 pb-8 px-4 sm:px-6 lg:px-8 text-left ${
         isDarkMode
           ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
           : 'bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 text-slate-900'
       }`}
-      style={{
-        backgroundSize: '200% 200%',
-        animation: 'breatheBackground 5s ease-in-out infinite',
-      }}
     >
       <style>{`
         @keyframes rotateRing1 {
@@ -471,29 +493,163 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           0%, 100% { transform: translate(0px, 0px); }
           50% { transform: translate(-5px, 5px); }
         }
-      `}</style>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 120 }, (_, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 2.5 + 0.5}px`,
-              height: `${Math.random() * 2.5 + 0.5}px`,
-              borderRadius: '50%',
-              backgroundColor: isDarkMode ? '#ffffff' : '#1e293b',
-              opacity: Math.random() * 0.6 + 0.4,
-              boxShadow: isDarkMode ? '0 0 2px rgba(255, 255, 255, 0.4)' : 'none',
-              animation: `${i % 2 === 0 ? 'starDriftA' : 'starDriftB'} 10s ease-in-out infinite`,
-              animationDelay: `-${(i % 10) * 0.7}s`,
-            }}
-          />
-        ))}
-      </div>
+        @keyframes starShipDriftA {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(22px, -36px, 0); }
+        }
+        @keyframes starShipDriftB {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(-18px, 30px, 0); }
+        }
 
-      <div className="relative flex items-center gap-8 lg:gap-12 max-w-6xl">
+        .portfolio-starfield {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+        }
+
+        .portfolio-star {
+          position: absolute;
+          display: block;
+          border-radius: 9999px;
+          background-color: currentColor;
+          box-shadow: 0 0 2px currentColor;
+          opacity: 0.45;
+        }
+
+        .portfolio-star--fast {
+          animation: starShipDriftA 3.2s linear infinite;
+        }
+
+        .portfolio-star--slow {
+          animation: starShipDriftB 4.1s linear infinite;
+        }
+
+        .portfolio-star-slot-1 { left: 8%; top: 12%; width: 2px; height: 2px; }
+        .portfolio-star-slot-2 { left: 17%; top: 26%; width: 1px; height: 1px; }
+        .portfolio-star-slot-3 { left: 24%; top: 9%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-4 { left: 33%; top: 19%; width: 1px; height: 1px; }
+        .portfolio-star-slot-5 { left: 42%; top: 11%; width: 2.5px; height: 2.5px; }
+        .portfolio-star-slot-6 { left: 51%; top: 30%; width: 1px; height: 1px; }
+        .portfolio-star-slot-7 { left: 60%; top: 15%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-8 { left: 69%; top: 24%; width: 1px; height: 1px; }
+        .portfolio-star-slot-9 { left: 77%; top: 10%; width: 2px; height: 2px; }
+        .portfolio-star-slot-10 { left: 85%; top: 18%; width: 1px; height: 1px; }
+        .portfolio-star-slot-11 { left: 92%; top: 34%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-12 { left: 12%; top: 54%; width: 2px; height: 2px; }
+        .portfolio-star-slot-13 { left: 21%; top: 68%; width: 1px; height: 1px; }
+        .portfolio-star-slot-14 { left: 30%; top: 58%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-15 { left: 39%; top: 73%; width: 1px; height: 1px; }
+        .portfolio-star-slot-16 { left: 48%; top: 61%; width: 2.5px; height: 2.5px; }
+        .portfolio-star-slot-17 { left: 57%; top: 78%; width: 1px; height: 1px; }
+        .portfolio-star-slot-18 { left: 66%; top: 67%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-19 { left: 74%; top: 83%; width: 1px; height: 1px; }
+        .portfolio-star-slot-20 { left: 82%; top: 63%; width: 2px; height: 2px; }
+        .portfolio-star-slot-21 { left: 90%; top: 76%; width: 1px; height: 1px; }
+        .portfolio-star-slot-22 { left: 6%; top: 84%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-23 { left: 26%; top: 88%; width: 1px; height: 1px; }
+        .portfolio-star-slot-24 { left: 54%; top: 90%; width: 2px; height: 2px; }
+
+        .portfolio-project-card {
+          position: relative;
+          --portfolio-project-accent: rgba(59, 130, 246, 0.95);
+          transition: transform 220ms ease, box-shadow 220ms ease;
+          transform-origin: center;
+        }
+
+        .portfolio-project-card:hover {
+          transform: translateY(-4px);
+        }
+
+        .portfolio-project-card--yugioh:hover {
+          box-shadow: 0 18px 36px rgba(217, 119, 6, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+        }
+
+        .portfolio-project-card__holo {
+          opacity: 0.6;
+          transition: opacity 200ms ease, transform 200ms ease;
+        }
+
+        .portfolio-project-card:hover .portfolio-project-card__holo {
+          opacity: 0.95;
+        }
+
+        .portfolio-project-card__shine {
+          opacity: 0.55;
+          transition: opacity 180ms ease;
+        }
+
+        .portfolio-project-card:hover .portfolio-project-card__shine {
+          opacity: 1;
+        }
+
+        .portfolio-project-card__border {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 180ms ease;
+          box-shadow: inset 0 0 0 4px var(--portfolio-project-accent);
+        }
+
+        .portfolio-project-card:hover .portfolio-project-card__border {
+          opacity: 1;
+        }
+
+        .portfolio-project-card--cyan {
+          --portfolio-project-accent: rgba(34, 211, 238, 0.95);
+          border-color: rgba(34, 211, 238, 0.4);
+          box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.14), 0 0 0 1px rgba(34, 211, 238, 0.18), 0 12px 28px rgba(34, 211, 238, 0.12);
+        }
+
+        .portfolio-project-card--violet {
+          --portfolio-project-accent: rgba(124, 58, 237, 0.95);
+          border-color: rgba(124, 58, 237, 0.4);
+          box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.14), 0 0 0 1px rgba(124, 58, 237, 0.18), 0 12px 28px rgba(124, 58, 237, 0.12);
+        }
+
+        .portfolio-project-card--amber {
+          --portfolio-project-accent: rgba(217, 119, 6, 0.95);
+          border-color: rgba(217, 119, 6, 0.45);
+          box-shadow: inset 0 0 0 1px rgba(217, 119, 6, 0.16), 0 0 0 1px rgba(217, 119, 6, 0.2), 0 12px 28px rgba(217, 119, 6, 0.14);
+        }
+
+        .portfolio-project-card--lime {
+          --portfolio-project-accent: rgba(101, 163, 13, 0.95);
+          border-color: rgba(101, 163, 13, 0.4);
+          box-shadow: inset 0 0 0 1px rgba(101, 163, 13, 0.14), 0 0 0 1px rgba(101, 163, 13, 0.18), 0 12px 28px rgba(101, 163, 13, 0.12);
+        }
+
+        .portfolio-project-card--red {
+          --portfolio-project-accent: rgba(220, 38, 38, 0.95);
+          border-color: rgba(220, 38, 38, 0.42);
+          box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.14), 0 0 0 1px rgba(220, 38, 38, 0.18), 0 12px 28px rgba(220, 38, 38, 0.12);
+        }
+
+        .portfolio-project-card:hover.portfolio-project-card--cyan {
+          box-shadow: inset 0 0 0 2px rgba(34, 211, 238, 0.3), 0 0 0 1px rgba(34, 211, 238, 0.28), 0 18px 36px rgba(34, 211, 238, 0.18);
+        }
+
+        .portfolio-project-card:hover.portfolio-project-card--violet {
+          box-shadow: inset 0 0 0 2px rgba(124, 58, 237, 0.3), 0 0 0 1px rgba(124, 58, 237, 0.28), 0 18px 36px rgba(124, 58, 237, 0.18);
+        }
+
+        .portfolio-project-card:hover.portfolio-project-card--amber {
+          box-shadow: inset 0 0 0 2px rgba(217, 119, 6, 0.32), 0 0 0 1px rgba(217, 119, 6, 0.3), 0 18px 36px rgba(217, 119, 6, 0.2);
+        }
+
+        .portfolio-project-card:hover.portfolio-project-card--lime {
+          box-shadow: inset 0 0 0 2px rgba(101, 163, 13, 0.3), 0 0 0 1px rgba(101, 163, 13, 0.28), 0 18px 36px rgba(101, 163, 13, 0.18);
+        }
+
+        .portfolio-project-card:hover.portfolio-project-card--red {
+          box-shadow: inset 0 0 0 2px rgba(220, 38, 38, 0.3), 0 0 0 1px rgba(220, 38, 38, 0.28), 0 18px 36px rgba(220, 38, 38, 0.18);
+        }
+      `}</style>
+      <StarField />
+      <div className="relative z-10 flex items-center gap-8 lg:gap-12 max-w-6xl">
         <div className="flex-1 max-w-md">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3">
             Hi, I'm Josh Van Minsel
@@ -515,10 +671,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           </a>
         </div>
 
-        <div
-          className="hidden lg:flex flex-1 justify-center items-center"
-          style={{ width: '320px', height: '320px' }}
-        >
+        <div className="hidden lg:flex flex-1 w-[320px] h-[320px] justify-center items-center">
           <HaloRings
             opacity={ringsOpacity}
             isPulsing={isPulsing}
@@ -534,94 +687,155 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
 // ===== Component: Project Card =====
 
 const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: boolean }) => {
-  const glowStyle = project.glow
-    ? { boxShadow: `inset ${project.glow.direction} 0px ${project.glow.color}` }
-    : {}
+  const isYugiohCard = project.title === 'Yugioh Database'
+  const hasLiveLink = Boolean(project.liveLink && project.liveLink !== '#')
+  const hasGithubLink = Boolean(project.githubLink && project.githubLink !== '#')
+  const [isLiveHovered, setIsLiveHovered] = useState(false)
+  const [isGithubHovered, setIsGithubHovered] = useState(false)
+  const glowClass =
+    project.title === 'Treact'
+      ? 'portfolio-project-card--cyan'
+      : project.title === 'Movie Project'
+        ? 'portfolio-project-card--violet'
+        : project.title === 'Yugioh Database'
+          ? 'portfolio-project-card--amber'
+          : project.title === 'NFT Marketplace'
+            ? 'portfolio-project-card--lime'
+            : 'portfolio-project-card--red'
 
   return (
     <div
-      className={`relative z-10 rounded-lg p-6 transition-all duration-300 hover:z-30 focus-within:z-30 ${
+      className={`portfolio-project-card ${glowClass} ${isYugiohCard ? 'portfolio-project-card--yugioh group' : 'group'} relative z-10 rounded-lg p-6 hover:z-30 focus-within:z-30 ${
         isDarkMode ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-900'
-      }`}
-      style={glowStyle}
+      } ${isYugiohCard ? 'overflow-hidden border border-amber-500/40 shadow-[0_14px_32px_rgba(217,119,6,0.16)]' : 'shadow-lg'}`}
     >
-      <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-        {project.title}
-      </h3>
-      <p
-        className={`mb-3 text-sm font-medium tracking-wide ${
-          isDarkMode ? 'text-slate-300' : 'text-slate-700'
-        }`}
-      >
-        Completed: {project.completed}
-      </p>
-      <p
-        className={`mb-4 text-sm sm:text-base ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}
-      >
-        {project.description}
-      </p>
-      <div className="mb-4">
-        <div className="flex flex-wrap gap-2">
-          {project.techStack.map(tech => (
-            <span
-              key={tech}
-              className={`px-3 py-1 text-xs sm:text-sm rounded-full ${
-                isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800'
-              }`}
-            >
-              {tech}
-            </span>
-          ))}
+      <div className="portfolio-project-card__border" aria-hidden="true" />
+      {isYugiohCard && (
+        <>
+          <div className="portfolio-project-card__holo pointer-events-none absolute inset-0 bg-gradient-to-br from-amber-400/15 via-violet-400/10 to-teal-400/15 mix-blend-screen" />
+          <div className="portfolio-project-card__shine pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.28),_rgba(255,255,255,0.08)_22%,_transparent_52%)] transition-opacity duration-200 group-hover:opacity-100" />
+        </>
+      )}
+
+      <div className="relative z-10">
+        <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          {project.title}
+        </h3>
+        <p
+          className={`mb-3 text-sm font-medium tracking-wide ${
+            isDarkMode ? 'text-slate-300' : 'text-slate-700'
+          }`}
+        >
+          Completed: {project.completed}
+        </p>
+        <p
+          className={`mb-4 text-sm sm:text-base ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}
+        >
+          {project.description}
+        </p>
+        <div className="mb-4">
+          <div className="flex flex-wrap gap-2">
+            {project.techStack.map(tech => (
+              <span
+                key={tech}
+                className={`px-3 py-1 text-xs sm:text-sm rounded-full ${
+                  isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800'
+                }`}
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <div className="relative group inline-flex items-center">
-          {project.thumbnail && (
-            <div className="pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-64 overflow-hidden rounded-md border border-blue-400/50 bg-slate-950/95 shadow-2xl opacity-0 -translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 md:block">
-              <Image
-                src={project.thumbnail}
-                alt={`${project.title} live demo preview`}
-                width={1200}
-                height={630}
-                className="h-36 w-full object-cover"
-              />
-            </div>
-          )}
-          <a
-            href={project.liveLink}
-            className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-              isDarkMode
-                ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-400 active:bg-yellow-600 focus:ring-yellow-400 focus:ring-offset-slate-800'
-                : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500'
-            }`}
-            aria-label={`View live demo of ${project.title}`}
+        <div className="flex items-center gap-4">
+          <div
+            className="relative inline-flex items-center"
+            onMouseEnter={() => setIsLiveHovered(true)}
+            onMouseLeave={() => setIsLiveHovered(false)}
           >
-            Live Demo
-          </a>
-        </div>
-        <div className="relative group inline-flex items-center">
-          {project.thumbnail && (
-            <div className="pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-64 overflow-hidden rounded-md border border-cyan-400/50 bg-slate-950/95 shadow-2xl opacity-0 translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 md:block">
-              <Image
-                src={project.thumbnail}
-                alt={`${project.title} project thumbnail`}
-                width={1200}
-                height={630}
-                className="h-36 w-full object-cover"
-              />
-            </div>
-          )}
-          <a
-            href={project.githubLink}
-            className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-              isDarkMode
-                ? 'bg-slate-600 text-white hover:bg-slate-500 active:bg-slate-700 focus:ring-slate-400 focus:ring-offset-slate-800'
-                : 'bg-slate-700 text-white hover:bg-slate-800 active:bg-slate-900 focus:ring-slate-500'
-            }`}
-            aria-label={`View GitHub repository for ${project.title}`}
+            {project.thumbnail && (
+              <div
+                className={`pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-64 overflow-hidden rounded-md border border-blue-400/50 bg-slate-950/95 shadow-2xl transition-all duration-200 md:block ${isLiveHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
+              >
+                <Image
+                  src={project.thumbnail}
+                  alt={`${project.title} live demo preview`}
+                  width={1200}
+                  height={630}
+                  className="h-36 w-full object-cover"
+                />
+              </div>
+            )}
+            {hasLiveLink ? (
+              <a
+                href={project.liveLink}
+                className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  isDarkMode
+                    ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-400 active:bg-yellow-600 focus:ring-yellow-400 focus:ring-offset-slate-800'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500'
+                }`}
+                aria-label={`View live demo of ${project.title}`}
+              >
+                Live Demo
+              </a>
+            ) : (
+              <span
+                className={`inline-flex items-center px-4 py-2 text-sm rounded-md border border-dashed cursor-not-allowed ${
+                  isDarkMode
+                    ? 'border-slate-600 text-slate-400 bg-slate-800/70'
+                    : 'border-slate-300 text-slate-400 bg-slate-100'
+                }`}
+                aria-disabled="true"
+                title={`${project.title} does not have a live demo link yet`}
+              >
+                Demo Pending
+              </span>
+            )}
+          </div>
+          <div
+            className="relative inline-flex items-center"
+            onMouseEnter={() => setIsGithubHovered(true)}
+            onMouseLeave={() => setIsGithubHovered(false)}
           >
-            GitHub
-          </a>
+            {project.thumbnail && (
+              <div
+                className={`pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-64 overflow-hidden rounded-md border border-cyan-400/50 bg-slate-950/95 shadow-2xl transition-all duration-200 md:block ${isGithubHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
+              >
+                <Image
+                  src={project.thumbnail}
+                  alt={`${project.title} project thumbnail`}
+                  width={1200}
+                  height={630}
+                  className="h-36 w-full object-cover"
+                />
+              </div>
+            )}
+            {hasGithubLink ? (
+              <a
+                href={project.githubLink}
+                className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  isDarkMode
+                    ? 'bg-slate-600 text-white hover:bg-slate-500 active:bg-slate-700 focus:ring-slate-400 focus:ring-offset-slate-800'
+                    : 'bg-slate-700 text-white hover:bg-slate-800 active:bg-slate-900 focus:ring-slate-500'
+                }`}
+                aria-label={`View GitHub repository for ${project.title}`}
+              >
+                GitHub
+              </a>
+            ) : (
+              <span
+                className={`inline-flex items-center px-4 py-2 text-sm rounded-md border border-dashed cursor-not-allowed ${
+                  isDarkMode
+                    ? 'border-slate-600 text-slate-400 bg-slate-800/70'
+                    : 'border-slate-300 text-slate-400 bg-slate-100'
+                }`}
+                aria-disabled="true"
+                title={`${project.title} does not have a GitHub link yet`}
+              >
+                Repo Pending
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -631,41 +845,18 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
 // ===== Component: Projects Section =====
 
 const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
-  const { ref, isVisible } = useScrollAnimation()
+  const { ref } = useScrollAnimation()
   return (
     <section
       id="projects"
-      className={`relative py-14 px-4 sm:px-6 lg:px-8 ${
+      className={`portfolio-breathe-bg relative py-14 px-4 sm:px-6 lg:px-8 ${
         isDarkMode
           ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
           : 'bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 text-slate-900'
       }`}
-      style={{
-        backgroundSize: '200% 200%',
-        animation: 'breatheBackground 5s ease-in-out infinite',
-      }}
     >
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 300 }, (_, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: `${(i * 83.7 + (i % 7) * 31.2) % 100}%`,
-              top: `${(i * 61.4 + (i % 5) * 47.8) % 100}%`,
-              width: `${(i % 4) * 0.6 + 0.4}px`,
-              height: `${(i % 4) * 0.6 + 0.4}px`,
-              borderRadius: '50%',
-              backgroundColor: isDarkMode ? '#ffffff' : '#1e293b',
-              opacity: (i % 7) * 0.08 + 0.2,
-              boxShadow: isDarkMode ? '0 0 2px rgba(255,255,255,0.4)' : 'none',
-              animation: `${i % 2 === 0 ? 'starDriftA' : 'starDriftB'} 10s ease-in-out infinite`,
-              animationDelay: `-${(i % 10) * 0.7}s`,
-            }}
-          />
-        ))}
-      </div>
-      <div className="max-w-6xl mx-auto">
+      <StarField />
+      <div className="relative z-10 max-w-6xl mx-auto">
         <h2
           className={`text-3xl sm:text-4xl font-bold mb-8 text-center ${
             isDarkMode ? 'text-white' : 'text-slate-900'
@@ -675,14 +866,8 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
         </h2>
         <div ref={ref}>
           <ul className="flex flex-col items-center gap-6 max-w-3xl mx-auto">
-            {projects.map((project, index) => (
-              <li
-                key={project.id}
-                className={`relative z-10 w-full transition-all duration-700 hover:z-40 ${
-                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                }`}
-                style={{ transitionDelay: isVisible ? `${index * 120}ms` : '0ms' }}
-              >
+            {projects.map(project => (
+              <li key={project.id} className="relative z-10 w-full hover:z-40">
                 <ProjectCard project={project} isDarkMode={isDarkMode} />
               </li>
             ))}
@@ -698,25 +883,197 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
 const AboutSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const { ref: skillsRef, isVisible: skillsVisible } = useScrollAnimation()
   const skills = [
-    { name: 'React', icon: SiReact, color: '#61DAFB' },
-    { name: 'Next.js', icon: SiNextdotjs, color: '#FFFFFF' },
-    { name: 'TypeScript', icon: SiTypescript, color: '#3178C6' },
-    { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#06B6D4' },
-    { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E' },
-    { name: 'HTML', icon: SiHtml5, color: '#E34C26' },
-    { name: 'CSS', icon: FaCss3Alt, color: '#1572B6' },
-    { name: 'Git', icon: SiGit, color: '#F1502F' },
-    { name: 'Jest', icon: SiJest, color: '#C21325' },
-    { name: 'React Testing Library', icon: SiJest, color: '#C21325' },
-    { name: 'Firebase', icon: SiFirebase, color: '#FFCA28' },
-    { name: 'Responsive Design', icon: MdPhoneIphone, color: '#3B82F6' },
+    { name: 'React', icon: SiReact, color: '#61DAFB', rarity: 'ultimate' },
+    { name: 'Next.js', icon: SiNextdotjs, color: '#FFFFFF', rarity: 'ultimate' },
+    { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', rarity: 'ultimate' },
+    { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#06B6D4', rarity: 'ultimate' },
+    { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E', rarity: 'ghost' },
+    { name: 'HTML', icon: SiHtml5, color: '#E34C26', rarity: 'ghost' },
+    { name: 'CSS', icon: FaCss3Alt, color: '#1572B6', rarity: 'ghost' },
+    { name: 'Git', icon: SiGit, color: '#F1502F', rarity: 'ghost' },
+    { name: 'Jest', icon: SiJest, color: '#C21325', rarity: 'secret' },
+    { name: 'React Testing Library', icon: FaFlask, color: '#E33332', rarity: 'secret' },
+    { name: 'Firebase', icon: SiFirebase, color: '#FFCA28', rarity: 'secret' },
+    { name: 'Responsive Design', icon: MdPhoneIphone, color: '#3B82F6', rarity: 'secret' },
   ]
+  const rarityColumns = ['ultimate', 'ghost', 'secret'] as const
 
   return (
     <section
       id="about"
       className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}
     >
+      <style>{`
+        @keyframes ultimateFoilShift {
+          0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+          50% { background-position: 90% 40%, 40% 80%, 100% 20%; }
+          100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+        }
+
+        @keyframes ultimateSparkleSweep {
+          0% { transform: translateX(-130%) rotate(13deg); opacity: 0; }
+          25% { opacity: 0.5; }
+          50% { opacity: 0.75; }
+          100% { transform: translateX(130%) rotate(13deg); opacity: 0; }
+        }
+
+        @keyframes secretRareLines {
+          0% { background-position: 0% 0%, 0% 0%; }
+          100% { background-position: 120% 0%, -120% 0%; }
+        }
+
+        @keyframes secretHoverSweep {
+          0% { transform: translateX(-130%) rotate(14deg); opacity: 0; }
+          20% { opacity: 0.35; }
+          50% { opacity: 0.7; }
+          100% { transform: translateX(130%) rotate(14deg); opacity: 0; }
+        }
+
+        @keyframes secretColumnShimmerLtr {
+          0% { transform: translateX(-60%) rotate(14deg); opacity: 0.2; }
+          50% { opacity: 0.85; }
+          100% { transform: translateX(60%) rotate(14deg); opacity: 0.2; }
+        }
+
+        @keyframes secretColumnShimmerRtl {
+          0% { transform: translateX(60%) rotate(14deg); opacity: 0.2; }
+          50% { opacity: 0.85; }
+          100% { transform: translateX(-60%) rotate(14deg); opacity: 0.2; }
+        }
+
+        .portfolio-skill-card {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 88px;
+          overflow: hidden;
+          padding: 0.75rem 0.5rem;
+          border-radius: 0.375rem;
+          border: 1px solid transparent;
+          transition: transform 500ms ease, opacity 500ms ease, box-shadow 300ms ease;
+        }
+
+        .portfolio-skill-card--visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .portfolio-skill-card--hidden {
+          opacity: 0;
+          transform: translateY(1rem);
+        }
+
+        .portfolio-skill-card:hover {
+          transform: translateY(-2px);
+        }
+
+        .portfolio-skill-card__overlay {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: 0.82;
+          mix-blend-mode: screen;
+          transition: opacity 300ms ease, filter 300ms ease;
+        }
+
+        .portfolio-skill-card[data-rarity='ultimate'][data-dark='true'] {
+          background: linear-gradient(136deg, rgba(124,58,237,0.32), rgba(217,119,6,0.26) 42%, rgba(20,184,166,0.24) 80%), repeating-linear-gradient(45deg, rgba(255,255,255,0.12) 0px, rgba(255,255,255,0.12) 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 6px), radial-gradient(circle at 24% 20%, rgba(255,255,255,0.3), transparent 56%);
+          border-color: rgba(254,240,138,0.55);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14), 0 8px 20px rgba(217,119,6,0.26);
+        }
+
+        .portfolio-skill-card[data-rarity='ultimate'][data-dark='false'] {
+          background: linear-gradient(136deg, rgba(124,58,237,0.22), rgba(217,119,6,0.2) 42%, rgba(20,184,166,0.18) 80%), repeating-linear-gradient(45deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 2px, rgba(255,255,255,0.04) 2px, rgba(255,255,255,0.04) 6px), radial-gradient(circle at 24% 20%, rgba(255,255,255,0.38), transparent 56%);
+          border-color: rgba(217,119,6,0.45);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4), 0 6px 16px rgba(217,119,6,0.2);
+        }
+
+        .portfolio-skill-card[data-rarity='ghost'][data-dark='true'] {
+          background: linear-gradient(150deg, rgba(148,163,184,0.1), rgba(148,163,184,0.03) 60%, rgba(148,163,184,0.08));
+          border-color: rgba(226,232,240,0.2);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(15,23,42,0.35), inset 0 0 24px rgba(34,211,238,0.12);
+        }
+
+        .portfolio-skill-card[data-rarity='ghost'][data-dark='false'] {
+          background: linear-gradient(150deg, rgba(148,163,184,0.12), rgba(148,163,184,0.04) 60%, rgba(148,163,184,0.1));
+          border-color: rgba(100,116,139,0.2);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2), 0 2px 8px rgba(15,23,42,0.15), inset 0 0 24px rgba(15,23,42,0.08);
+        }
+
+        .portfolio-skill-card[data-rarity='secret'][data-dark='true'] {
+          background: repeating-linear-gradient(112deg, rgba(196,181,253,0.22) 0px, rgba(196,181,253,0.22) 2px, rgba(167,139,250,0.07) 2px, rgba(167,139,250,0.07) 7px), repeating-linear-gradient(68deg, rgba(244,114,182,0.16) 0px, rgba(244,114,182,0.16) 2px, rgba(14,165,233,0.06) 2px, rgba(14,165,233,0.06) 8px), linear-gradient(142deg, rgba(30,41,59,0.84), rgba(15,23,42,0.9));
+          border-color: rgba(196,181,253,0.35);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 4px 12px rgba(109,40,217,0.2);
+          animation: secretRareLines 8s linear infinite;
+        }
+
+        .portfolio-skill-card[data-rarity='secret'][data-dark='false'] {
+          background: repeating-linear-gradient(112deg, rgba(196,181,253,0.2) 0px, rgba(196,181,253,0.2) 2px, rgba(167,139,250,0.06) 2px, rgba(167,139,250,0.06) 7px), repeating-linear-gradient(68deg, rgba(244,114,182,0.14) 0px, rgba(244,114,182,0.14) 2px, rgba(14,165,233,0.05) 2px, rgba(14,165,233,0.05) 8px), linear-gradient(142deg, rgba(241,245,249,0.9), rgba(226,232,240,0.9));
+          border-color: rgba(167,139,250,0.35);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24), 0 4px 12px rgba(109,40,217,0.16);
+          animation: secretRareLines 8s linear infinite;
+        }
+
+        .portfolio-skill-card[data-column='left'] .portfolio-skill-card__overlay {
+          left: 0;
+          width: 50%;
+          clip-path: polygon(0 0, 62% 0, 50% 100%, 0 100%);
+          transform: skewX(-12deg);
+          transform-origin: left center;
+        }
+
+        .portfolio-skill-card[data-column='right'] .portfolio-skill-card__overlay {
+          right: 0;
+          width: 50%;
+          clip-path: polygon(38% 0, 100% 0, 100% 100%, 50% 100%);
+          transform: skewX(12deg);
+          transform-origin: right center;
+        }
+
+        .portfolio-skill-card[data-column='middle'] .portfolio-skill-card__overlay {
+          inset: 0.5rem;
+          border-radius: inherit;
+          opacity: 0;
+        }
+
+        .portfolio-skill-card[data-column='middle']:hover .portfolio-skill-card__overlay {
+          opacity: 1;
+        }
+
+        .portfolio-skill-card[data-rarity='ultimate'] .portfolio-skill-card__overlay {
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), rgba(255,255,255,0.08), transparent);
+          animation: ultimateSparkleSweep 3.5s ease-in-out infinite;
+        }
+
+        .portfolio-skill-card[data-rarity='ghost'] .portfolio-skill-card__overlay {
+          background: linear-gradient(160deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+          opacity: 0.72;
+        }
+
+        .portfolio-skill-card[data-rarity='secret'] .portfolio-skill-card__overlay {
+          background: linear-gradient(135deg, rgba(34,211,238,0.12), rgba(168,85,247,0.12) 42%, rgba(249,115,22,0.1) 72%, rgba(74,222,128,0.1));
+          opacity: 0.9;
+        }
+
+        .portfolio-skill-card__icon {
+          position: relative;
+          z-index: 1;
+          opacity: 0.98;
+        }
+
+        .portfolio-skill-card[data-rarity='ghost'] .portfolio-skill-card__icon {
+          filter: drop-shadow(0 0 9px rgba(255,255,255,0.24)) saturate(1.25);
+        }
+
+        .portfolio-skill-card[data-rarity='ultimate'] .portfolio-skill-card__icon {
+          filter: drop-shadow(0 0 8px rgba(255,255,255,0.28)) saturate(1.08);
+        }
+
+        .portfolio-skill-card[data-rarity='secret'] .portfolio-skill-card__icon {
+          filter: drop-shadow(0 0 6px rgba(167,139,250,0.28)) saturate(1.15);
+        }
+      `}</style>
       <div className="max-w-4xl mx-auto">
         <h2
           className={`text-3xl sm:text-4xl font-bold mb-6 ${
@@ -741,19 +1098,37 @@ const AboutSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           <h3 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             Skills
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4" ref={skillsRef}>
-            {skills.map((skill, index) => {
-              const IconComponent = skill.icon
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" ref={skillsRef}>
+            {rarityColumns.map((rarity, columnIndex) => {
+              const columnSkills = skills.filter(skill => skill.rarity === rarity)
+              const columnName = columnIndex === 0 ? 'left' : columnIndex === 1 ? 'middle' : 'right'
+
               return (
-                <div
-                  key={skill.name}
-                  title={skill.name}
-                  className={`transition-all duration-500 hover:scale-110 cursor-default flex items-center justify-center ${
-                    skillsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                  }`}
-                  style={{ transitionDelay: skillsVisible ? `${index * 60}ms` : '0ms' }}
-                >
-                  <IconComponent size={32} color={skill.color} />
+                <div key={rarity} className="flex flex-col gap-4">
+                  {columnSkills.map(skill => {
+                    const IconComponent = skill.icon
+                    const iconColor =
+                      skill.name === 'Next.js' ? (isDarkMode ? '#FFFFFF' : '#0f172a') : skill.color
+
+                    return (
+                      <div
+                        key={skill.name}
+                        title={skill.name}
+                        aria-label={skill.name}
+                        data-rarity={skill.rarity}
+                        data-column={columnName}
+                        data-dark={isDarkMode}
+                        className={`portfolio-skill-card group ${skillsVisible ? 'portfolio-skill-card--visible' : 'portfolio-skill-card--hidden'}`}
+                      >
+                        <span className="portfolio-skill-card__overlay" aria-hidden="true" />
+                        <IconComponent
+                          size={34}
+                          color={iconColor}
+                          className="portfolio-skill-card__icon"
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
               )
             })}
@@ -975,7 +1350,7 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
               onChange={handleChange}
               aria-describedby={errors.message ? 'message-error' : undefined}
               rows={6}
-              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 resize-none ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-100 text-slate-900 border-slate-400 focus:ring-blue-500 focus:border-transparent'}`}
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 resize-none border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-100 text-slate-900 border-slate-400 focus:ring-blue-500 focus:border-transparent'}`}
               placeholder="Your message here..."
             />
             {errors.message && (
@@ -1012,7 +1387,7 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
       url: 'https://www.linkedin.com/in/joshua-vanminsel-628910107/',
       ariaLabel: 'Visit LinkedIn profile',
     },
-    { name: 'Resume', url: '#', ariaLabel: 'View resume' },
+    { name: 'Resume', url: '/resume.pdf', ariaLabel: 'View resume' },
     {
       name: 'Book a Call',
       url: '#',
@@ -1061,13 +1436,13 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
 // ===== Component: Scope Cursor =====
 
 const ScopeCursor = () => {
-  const [pos, setPos] = useState({ x: -100, y: -100 })
   const [isHovering, setIsHovering] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     const handleMove = (e: MouseEvent) => {
-      setPos({ x: e.clientX, y: e.clientY })
+      document.documentElement.style.setProperty('--portfolio-cursor-x', `${e.clientX}px`)
+      document.documentElement.style.setProperty('--portfolio-cursor-y', `${e.clientY}px`)
       setIsVisible(true)
     }
     const handleOver = (e: MouseEvent) => {
@@ -1090,31 +1465,55 @@ const ScopeCursor = () => {
 
   return (
     <>
-      <style>{`@media (pointer: fine) { * { cursor: none !important; } }`}</style>
+      <style>{`
+        :root {
+          --portfolio-cursor-x: -100px;
+          --portfolio-cursor-y: -100px;
+        }
+
+        @media (pointer: fine) {
+          * {
+            cursor: none !important;
+          }
+        }
+
+        .portfolio-scope-cursor {
+          position: fixed;
+          left: var(--portfolio-cursor-x);
+          top: var(--portfolio-cursor-y);
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+          z-index: 9999;
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+
+        .portfolio-scope-cursor--visible {
+          opacity: 1;
+        }
+
+        .portfolio-scope-cursor__svg {
+          transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .portfolio-scope-cursor--hover .portfolio-scope-cursor__svg {
+          transform: scale(1.35);
+          filter: drop-shadow(0 0 5px rgba(34,211,238,0.8));
+        }
+
+        .portfolio-scope-cursor:not(.portfolio-scope-cursor--hover) .portfolio-scope-cursor__svg {
+          transform: scale(1);
+          filter: drop-shadow(0 0 3px rgba(45,106,79,0.6));
+        }
+
+        .portfolio-scope-cursor__shape {
+          transition: stroke 0.15s ease, fill 0.15s ease;
+        }
+      `}</style>
       <div
-        style={{
-          position: 'fixed',
-          left: pos.x,
-          top: pos.y,
-          transform: 'translate(-50%, -50%)',
-          pointerEvents: 'none',
-          zIndex: 9999,
-          opacity: isVisible ? 1 : 0,
-          transition: 'opacity 0.2s ease',
-        }}
+        className={`portfolio-scope-cursor ${isVisible ? 'portfolio-scope-cursor--visible' : ''} ${isHovering ? 'portfolio-scope-cursor--hover' : ''}`}
       >
-        <svg
-          width={40}
-          height={40}
-          viewBox="0 0 40 40"
-          style={{
-            transition: 'transform 0.15s ease, filter 0.15s ease',
-            transform: isHovering ? 'scale(1.35)' : 'scale(1)',
-            filter: isHovering
-              ? 'drop-shadow(0 0 5px rgba(34,211,238,0.8))'
-              : 'drop-shadow(0 0 3px rgba(45,106,79,0.6))',
-          }}
-        >
+        <svg width={40} height={40} viewBox="0 0 40 40" className="portfolio-scope-cursor__svg">
           {/* Outer ring */}
           <circle
             cx="20"
@@ -1123,10 +1522,10 @@ const ScopeCursor = () => {
             fill="none"
             stroke={color}
             strokeWidth="1.5"
-            style={{ transition: 'stroke 0.15s ease' }}
+            className="portfolio-scope-cursor__shape"
           />
           {/* Center dot */}
-          <circle cx="20" cy="20" r="1.5" fill={color} style={{ transition: 'fill 0.15s ease' }} />
+          <circle cx="20" cy="20" r="1.5" fill={color} className="portfolio-scope-cursor__shape" />
           {/* Top tick */}
           <line
             x1="20"
@@ -1136,7 +1535,7 @@ const ScopeCursor = () => {
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
-            style={{ transition: 'stroke 0.15s ease' }}
+            className="portfolio-scope-cursor__shape"
           />
           {/* Bottom tick */}
           <line
@@ -1147,7 +1546,7 @@ const ScopeCursor = () => {
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
-            style={{ transition: 'stroke 0.15s ease' }}
+            className="portfolio-scope-cursor__shape"
           />
           {/* Left tick */}
           <line
@@ -1158,7 +1557,7 @@ const ScopeCursor = () => {
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
-            style={{ transition: 'stroke 0.15s ease' }}
+            className="portfolio-scope-cursor__shape"
           />
           {/* Right tick */}
           <line
@@ -1169,7 +1568,7 @@ const ScopeCursor = () => {
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
-            style={{ transition: 'stroke 0.15s ease' }}
+            className="portfolio-scope-cursor__shape"
           />
         </svg>
       </div>
