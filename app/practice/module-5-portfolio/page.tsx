@@ -574,102 +574,14 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
         .portfolio-project-card {
           position: relative;
-          --portfolio-project-accent: rgba(59, 130, 246, 0.95);
-          transition: transform 220ms ease, box-shadow 220ms ease;
+          transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease, background-color 200ms ease;
           transform-origin: center;
         }
 
         .portfolio-project-card:hover {
-          transform: translateY(-4px);
-        }
-
-        .portfolio-project-card--yugioh:hover {
-          box-shadow: 0 18px 36px rgba(217, 119, 6, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-        }
-
-        .portfolio-project-card__holo {
-          opacity: 0.6;
-          transition: opacity 200ms ease, transform 200ms ease;
-        }
-
-        .portfolio-project-card:hover .portfolio-project-card__holo {
-          opacity: 0.95;
-        }
-
-        .portfolio-project-card__shine {
-          opacity: 0.55;
-          transition: opacity 180ms ease;
-        }
-
-        .portfolio-project-card:hover .portfolio-project-card__shine {
-          opacity: 1;
-        }
-
-        .portfolio-project-card__border {
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          pointer-events: none;
-          opacity: 0;
-          transition: opacity 180ms ease;
-          box-shadow: inset 0 0 0 4px var(--portfolio-project-accent);
-        }
-
-        .portfolio-project-card:hover .portfolio-project-card__border {
-          opacity: 1;
-        }
-
-        .portfolio-project-card--cyan {
-          --portfolio-project-accent: rgba(34, 211, 238, 0.95);
-          border-color: rgba(34, 211, 238, 0.4);
-          box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.14), 0 0 0 1px rgba(34, 211, 238, 0.18), 0 12px 28px rgba(34, 211, 238, 0.12);
-        }
-
-        .portfolio-project-card--violet {
-          --portfolio-project-accent: rgba(124, 58, 237, 0.95);
-          border-color: rgba(124, 58, 237, 0.4);
-          box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.14), 0 0 0 1px rgba(124, 58, 237, 0.18), 0 12px 28px rgba(124, 58, 237, 0.12);
-        }
-
-        .portfolio-project-card--amber {
-          --portfolio-project-accent: rgba(217, 119, 6, 0.95);
-          border-color: rgba(217, 119, 6, 0.45);
-          box-shadow: inset 0 0 0 1px rgba(217, 119, 6, 0.16), 0 0 0 1px rgba(217, 119, 6, 0.2), 0 12px 28px rgba(217, 119, 6, 0.14);
-        }
-
-        .portfolio-project-card--lime {
-          --portfolio-project-accent: rgba(101, 163, 13, 0.95);
-          border-color: rgba(101, 163, 13, 0.4);
-          box-shadow: inset 0 0 0 1px rgba(101, 163, 13, 0.14), 0 0 0 1px rgba(101, 163, 13, 0.18), 0 12px 28px rgba(101, 163, 13, 0.12);
-        }
-
-        .portfolio-project-card--red {
-          --portfolio-project-accent: rgba(220, 38, 38, 0.95);
-          border-color: rgba(220, 38, 38, 0.42);
-          box-shadow: inset 0 0 0 1px rgba(220, 38, 38, 0.14), 0 0 0 1px rgba(220, 38, 38, 0.18), 0 12px 28px rgba(220, 38, 38, 0.12);
-        }
-
-        .portfolio-project-card:hover.portfolio-project-card--cyan {
-          box-shadow: inset 0 0 0 2px rgba(34, 211, 238, 0.3), 0 0 0 1px rgba(34, 211, 238, 0.28), 0 18px 36px rgba(34, 211, 238, 0.18);
-        }
-
-        .portfolio-project-card:hover.portfolio-project-card--violet {
-          box-shadow: inset 0 0 0 2px rgba(124, 58, 237, 0.3), 0 0 0 1px rgba(124, 58, 237, 0.28), 0 18px 36px rgba(124, 58, 237, 0.18);
-        }
-
-        .portfolio-project-card:hover.portfolio-project-card--amber {
-          box-shadow: inset 0 0 0 2px rgba(217, 119, 6, 0.32), 0 0 0 1px rgba(217, 119, 6, 0.3), 0 18px 36px rgba(217, 119, 6, 0.2);
-        }
-
-        .portfolio-project-card:hover.portfolio-project-card--lime {
-          box-shadow: inset 0 0 0 2px rgba(101, 163, 13, 0.3), 0 0 0 1px rgba(101, 163, 13, 0.28), 0 18px 36px rgba(101, 163, 13, 0.18);
-        }
-
-        .portfolio-project-card:hover.portfolio-project-card--red {
-          box-shadow: inset 0 0 0 2px rgba(220, 38, 38, 0.3), 0 0 0 1px rgba(220, 38, 38, 0.28), 0 18px 36px rgba(220, 38, 38, 0.18);
+          transform: translateY(-2px);
         }
       `}</style>
-      <StarField />
       <div className="relative z-10 flex items-center gap-8 lg:gap-12 max-w-6xl">
         <div className="flex-1 max-w-md">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3">
@@ -713,31 +625,15 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
   const hasGithubLink = Boolean(project.githubLink && project.githubLink !== '#')
   const [isLiveHovered, setIsLiveHovered] = useState(false)
   const [isGithubHovered, setIsGithubHovered] = useState(false)
-  const glowClass =
-    project.title === 'Treact'
-      ? 'portfolio-project-card--cyan'
-      : project.title === 'Movie Project'
-        ? 'portfolio-project-card--violet'
-        : project.title === 'Yugioh Database'
-          ? 'portfolio-project-card--amber'
-          : project.title === 'NFT Marketplace'
-            ? 'portfolio-project-card--lime'
-            : 'portfolio-project-card--red'
 
   return (
     <div
-      className={`portfolio-project-card ${glowClass} ${isYugiohCard ? 'portfolio-project-card--yugioh group' : 'group'} relative z-10 rounded-lg p-6 hover:z-30 focus-within:z-30 ${
-        isDarkMode ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-900'
-      } ${isYugiohCard ? 'overflow-hidden border border-amber-500/40 shadow-[0_14px_32px_rgba(217,119,6,0.16)]' : 'shadow-lg'}`}
+      className={`portfolio-project-card group relative z-10 rounded-lg border p-6 hover:z-30 focus-within:z-30 ${
+        isDarkMode
+          ? 'border-slate-700 bg-slate-900 text-white shadow-sm hover:shadow-md'
+          : 'border-slate-200 bg-white text-slate-900 shadow-sm hover:shadow-md'
+      } ${isYugiohCard ? 'overflow-hidden' : ''}`}
     >
-      <div className="portfolio-project-card__border" aria-hidden="true" />
-      {isYugiohCard && (
-        <>
-          <div className="portfolio-project-card__holo pointer-events-none absolute inset-0 bg-gradient-to-br from-amber-400/15 via-violet-400/10 to-teal-400/15 mix-blend-screen" />
-          <div className="portfolio-project-card__shine pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.28),_rgba(255,255,255,0.08)_22%,_transparent_52%)] transition-opacity duration-200 group-hover:opacity-100" />
-        </>
-      )}
-
       <div className="relative z-10">
         <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
           {project.title}
@@ -759,8 +655,10 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
             {project.techStack.map(tech => (
               <span
                 key={tech}
-                className={`px-3 py-1 text-xs sm:text-sm rounded-full ${
-                  isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800'
+                className={`px-3 py-1 text-xs sm:text-sm rounded-full border ${
+                  isDarkMode
+                    ? 'border-slate-700 bg-slate-800 text-slate-200'
+                    : 'border-slate-200 bg-slate-100 text-slate-700'
                 }`}
               >
                 {tech}
@@ -768,7 +666,7 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="mt-auto flex items-center gap-4 pt-4">
           <div
             className="relative inline-flex items-center"
             onMouseEnter={() => setIsLiveHovered(true)}
@@ -776,7 +674,7 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
           >
             {project.thumbnail && (
               <div
-                className={`pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-64 overflow-hidden rounded-md border border-blue-400/50 bg-slate-950/95 shadow-2xl transition-all duration-200 md:block ${isLiveHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
+                className={`pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 md:block ${isLiveHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
               >
                 <Image
                   src={project.thumbnail}
@@ -820,7 +718,7 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
           >
             {project.thumbnail && (
               <div
-                className={`pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-64 overflow-hidden rounded-md border border-cyan-400/50 bg-slate-950/95 shadow-2xl transition-all duration-200 md:block ${isGithubHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
+                className={`pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 md:block ${isGithubHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
               >
                 <Image
                   src={project.thumbnail}
@@ -870,25 +768,22 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <section
       id="projects"
-      className={`portfolio-breathe-bg relative py-14 px-4 sm:px-6 lg:px-8 ${
-        isDarkMode
-          ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
-          : 'bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 text-slate-900'
+      className={`relative py-10 px-4 sm:px-6 lg:px-8 ${
+        isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-900'
       }`}
     >
-      <StarField />
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="relative z-10 max-w-5xl mx-auto">
         <h2
-          className={`text-3xl sm:text-4xl font-bold mb-8 text-center ${
+          className={`text-3xl sm:text-4xl font-bold mb-6 text-center ${
             isDarkMode ? 'text-white' : 'text-slate-900'
           }`}
         >
           Featured Projects
         </h2>
         <div ref={ref}>
-          <ul className="flex flex-col items-center gap-6 max-w-3xl mx-auto">
+          <ul className="flex flex-col gap-4">
             {projects.map(project => (
-              <li key={project.id} className="relative z-10 w-full hover:z-40">
+              <li key={project.id} className="relative z-10 w-full">
                 <ProjectCard project={project} isDarkMode={isDarkMode} />
               </li>
             ))}
@@ -1410,9 +1305,9 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
     },
     { name: 'Resume', url: '/resume.pdf', ariaLabel: 'View resume' },
     {
-      name: 'Book a Call',
-      url: '#',
-      ariaLabel: 'Book a call via Calendly or Zoom',
+      name: 'Schedule a Call',
+      url: 'https://us06web.zoom.us/j/8507978105?pwd=D9Ulbf8s1gra7nl6QVW98hlWbOb5az.1',
+      ariaLabel: 'Book a call via Zoom',
     },
   ]
 
@@ -1430,6 +1325,8 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
               <a
                 key={link.name}
                 href={link.url}
+                target={link.url.startsWith('http') ? '_blank' : undefined}
+                rel={link.url.startsWith('http') ? 'noreferrer' : undefined}
                 className={`transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded px-2 py-1 ${
                   isDarkMode
                     ? 'text-slate-300 hover:text-yellow-300 focus:ring-yellow-400 focus:ring-offset-slate-950'
