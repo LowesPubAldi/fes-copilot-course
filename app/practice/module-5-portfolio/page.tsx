@@ -17,36 +17,6 @@ import {
 import { MdPhoneIphone } from 'react-icons/md'
 import { FaCss3Alt, FaFlask, FaMousePointer } from 'react-icons/fa'
 
-// ===== EmailJS Config =====
-
-// ===== Hook: Scroll Animation =====
-const useScrollAnimation = () => {
-  const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.1 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [])
-
-  return { ref, isVisible }
-}
-
-const EMAILJS_SERVICE_ID = 'service_oe2vosd'
-const EMAILJS_TEMPLATE_ID = 'template_bfckmd9'
-const EMAILJS_PUBLIC_KEY = 'G1CS-QLbgNF8atJUw'
-
-// ===== TypeScript Interfaces =====
-
 interface Project {
   id: number
   title: string
@@ -70,6 +40,37 @@ interface ContactFormErrors {
   name?: string
   email?: string
   message?: string
+}
+
+// ===== EmailJS Config =====
+
+const EMAILJS_SERVICE_ID = 'service_oe2vosd'
+const EMAILJS_TEMPLATE_ID = 'template_bfckmd9'
+const EMAILJS_PUBLIC_KEY = 'G1CS-QLbgNF8atJUw'
+
+// ===== Hook: Scroll Animation =====
+
+const useScrollAnimation = () => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (ref.current) observer.observe(ref.current)
+
+    return () => observer.disconnect()
+  }, [])
+
+  return { ref, isVisible }
 }
 
 // ===== Sample Projects Data =====
@@ -146,7 +147,7 @@ const Header = ({
   cursorMode: 'scope' | 'plasma'
   toggleCursorMode: () => void
 }) => {
-  const navLinks = ['Home', 'About', 'Projects', 'Contact']
+  const navLinks = ['Home', 'Projects', 'About', 'Contact']
 
   return (
     <header
@@ -387,7 +388,7 @@ const HaloRings = ({
 }
 
 const StarField = ({ className = '' }: { className?: string }) => {
-  const starSlots = Array.from({ length: 24 }, (_, index) => index + 1)
+  const starSlots = Array.from({ length: 30 }, (_, index) => index + 1)
 
   return (
     <div className={`portfolio-starfield z-0 ${className}`} aria-hidden="true">
@@ -424,27 +425,27 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
     const updateRingsFromScroll = () => {
       const heroElement = heroSectionRef.current
-      const projectsElement = document.getElementById('projects')
+      const timelineElement = document.getElementById('hero-timeline')
 
-      if (!heroElement || !projectsElement) return
+      if (!heroElement || !timelineElement) return
 
       const scrollY = window.scrollY
       const viewportHeight = window.innerHeight
       const heroTop = heroElement.offsetTop
-      const projectsTop = projectsElement.offsetTop
+      const timelineTop = timelineElement.offsetTop
 
       const start = heroTop + 40
-      const end = projectsTop + viewportHeight * 0.35
+      const end = timelineTop + viewportHeight * 0.06
       const distance = Math.max(1, end - start)
       const rawProgress = (scrollY - start) / distance
       const progress = Math.min(1, Math.max(0, rawProgress))
       const fadeProgress = Math.min(1, Math.max(0, (progress - 0.12) / 0.88))
       const easedFade = fadeProgress * fadeProgress * (3 - 2 * fadeProgress)
 
-      // Keep rings visible as they descend, then let cards naturally cover them.
-      setRingsOpacity(1 - easedFade * 0.55)
-      setRingsScale(1 - progress * 0.72)
-      setRingsOffsetY(progress * 760)
+      // Complete the ring handoff at the timeline so they do not bleed into projects.
+      setRingsOpacity(1 - easedFade)
+      setRingsScale(1 - progress * 0.68)
+      setRingsOffsetY(progress * 420)
     }
 
     const handleScroll = () => {
@@ -467,7 +468,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
     <section
       ref={heroSectionRef}
       id="home"
-      className={`portfolio-breathe-bg relative pt-20 pb-8 px-4 sm:px-6 lg:px-8 text-left ${
+      className={`portfolio-breathe-bg relative min-h-[116svh] pt-20 pb-28 px-4 sm:px-6 lg:px-8 text-left ${
         isDarkMode
           ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
           : 'bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 text-slate-900'
@@ -571,6 +572,12 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
         .portfolio-star-slot-22 { left: 6%; top: 84%; width: 1.5px; height: 1.5px; }
         .portfolio-star-slot-23 { left: 26%; top: 88%; width: 1px; height: 1px; }
         .portfolio-star-slot-24 { left: 54%; top: 90%; width: 2px; height: 2px; }
+        .portfolio-star-slot-25 { left: 14%; top: 42%; width: 1px; height: 1px; }
+        .portfolio-star-slot-26 { left: 36%; top: 36%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-27 { left: 46%; top: 82%; width: 1px; height: 1px; }
+        .portfolio-star-slot-28 { left: 63%; top: 44%; width: 1.5px; height: 1.5px; }
+        .portfolio-star-slot-29 { left: 79%; top: 54%; width: 1px; height: 1px; }
+        .portfolio-star-slot-30 { left: 95%; top: 58%; width: 2px; height: 2px; }
 
         .portfolio-project-card {
           position: relative;
@@ -582,7 +589,8 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           transform: translateY(-2px);
         }
       `}</style>
-      <div className="relative z-10 flex items-center gap-8 lg:gap-12 max-w-6xl">
+      <StarField />
+      <div className="relative z-10 flex w-full items-center gap-8 lg:gap-12 max-w-6xl">
         <div className="flex-1 max-w-md">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3">
             Hi, I'm Josh Van Minsel
@@ -602,6 +610,13 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           >
             Get In Touch
           </a>
+          <p
+            className={`mt-4 text-sm sm:text-base font-medium tracking-wide ${
+              isDarkMode ? 'text-slate-400' : 'text-slate-600'
+            }`}
+          >
+            Open to freelance, contract, and junior frontend roles.
+          </p>
         </div>
 
         <div className="hidden lg:flex flex-1 w-[320px] h-[320px] justify-center items-center">
@@ -613,13 +628,107 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           />
         </div>
       </div>
+      <div id="hero-timeline" className="relative z-10 mt-2 w-full max-w-6xl">
+        <p
+          className={`mb-2 text-xs sm:text-sm uppercase tracking-[0.22em] ${
+            isDarkMode ? 'text-slate-500' : 'text-slate-500'
+          }`}
+        >
+          Project Timeline
+        </p>
+        <div className="relative overflow-hidden pt-1 sm:pt-2">
+          <div
+            className={`absolute left-0 right-0 top-4 h-px ${
+              isDarkMode ? 'bg-slate-700/60' : 'bg-slate-400/70'
+            }`}
+            aria-hidden="true"
+          />
+          <div
+            className="absolute right-0 top-4 flex -translate-y-1/2 items-center"
+            aria-hidden="true"
+          >
+            <span className={`h-px w-4 ${isDarkMode ? 'bg-slate-700/60' : 'bg-slate-400/70'}`} />
+            <span
+              className={`-ml-px border-y-[6px] border-y-transparent border-l-[10px] ${
+                isDarkMode ? 'border-l-slate-700/80' : 'border-l-slate-400/80'
+              }`}
+            />
+          </div>
+          <ul className="grid grid-cols-1 gap-8 sm:grid-cols-5 sm:gap-0">
+            {projects.map((project, index) => {
+              const isTopRow = index % 2 === 0
+              const dotToneClass =
+                index % 2 === 0
+                  ? isDarkMode
+                    ? 'border-slate-950 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.45)]'
+                    : 'border-slate-100 bg-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.35)]'
+                  : isDarkMode
+                    ? 'border-slate-950 bg-emerald-400 shadow-[0_0_10px_rgba(45,106,79,0.4)]'
+                    : 'border-slate-100 bg-emerald-500 shadow-[0_0_10px_rgba(45,106,79,0.3)]'
+
+              return (
+                <li key={project.id} className="relative flex justify-center sm:min-h-[11rem]">
+                  <span
+                    className={`absolute left-1/2 top-4 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${dotToneClass}`}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className={`hidden sm:block absolute left-1/2 top-4 w-px -translate-x-1/2 ${
+                      isTopRow ? 'h-8 -translate-y-full' : 'h-8'
+                    } ${isDarkMode ? 'bg-slate-600/70' : 'bg-slate-500/70'}`}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className={`w-full max-w-[14rem] text-center sm:absolute sm:left-1/2 sm:-translate-x-1/2 ${
+                      isTopRow ? 'sm:bottom-8' : 'sm:top-8'
+                    }`}
+                  >
+                    <div
+                      className={`rounded-md border px-3 py-2 shadow-sm ${
+                        isDarkMode
+                          ? 'border-slate-700 bg-slate-900/90 text-white'
+                          : 'border-slate-200 bg-slate-50 text-slate-900'
+                      }`}
+                    >
+                      <p
+                        className={`text-[10px] sm:text-[11px] uppercase tracking-[0.18em] ${
+                          isDarkMode ? 'text-slate-500' : 'text-slate-500'
+                        }`}
+                      >
+                        {project.completed}
+                      </p>
+                      <p
+                        className={`mt-1 text-xs sm:text-sm font-semibold ${
+                          isDarkMode ? 'text-slate-100' : 'text-slate-800'
+                        }`}
+                      >
+                        {project.title}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </div>
     </section>
   )
 }
 
 // ===== Component: Project Card =====
 
-const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: boolean }) => {
+const ProjectCard = ({
+  project,
+  isDarkMode,
+  isVisible,
+  revealDelay,
+}: {
+  project: Project
+  isDarkMode: boolean
+  isVisible: boolean
+  revealDelay: number
+}) => {
   const isYugiohCard = project.title === 'Yugioh Database'
   const hasLiveLink = Boolean(project.liveLink && project.liveLink !== '#')
   const hasGithubLink = Boolean(project.githubLink && project.githubLink !== '#')
@@ -628,6 +737,8 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
 
   return (
     <div
+      data-delay={revealDelay}
+      data-visible={isVisible ? 'true' : 'false'}
       className={`portfolio-project-card group relative z-10 rounded-lg border p-6 hover:z-30 focus-within:z-30 ${
         isDarkMode
           ? 'border-slate-700 bg-slate-900 text-white shadow-sm hover:shadow-md'
@@ -638,13 +749,6 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
         <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
           {project.title}
         </h3>
-        <p
-          className={`mb-3 text-sm font-medium tracking-wide ${
-            isDarkMode ? 'text-slate-300' : 'text-slate-700'
-          }`}
-        >
-          Completed: {project.completed}
-        </p>
         <p
           className={`mb-4 text-sm sm:text-base ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}
         >
@@ -764,27 +868,56 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
 // ===== Component: Projects Section =====
 
 const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
-  const { ref } = useScrollAnimation()
+  const { ref, isVisible } = useScrollAnimation()
   return (
     <section
       id="projects"
-      className={`relative py-10 px-4 sm:px-6 lg:px-8 ${
+      className={`relative py-20 px-4 sm:px-6 lg:px-8 ${
         isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-900'
       }`}
     >
+      <style>{`
+        .portfolio-project-card {
+          position: relative;
+          transform-origin: center bottom;
+          transition: transform 700ms ease, opacity 700ms ease, box-shadow 200ms ease;
+          will-change: transform, opacity;
+        }
+
+        .portfolio-project-card[data-visible='false'] {
+          opacity: 0;
+          transform: perspective(1200px) translateY(48px) rotateX(16deg) scale(0.97);
+        }
+
+        .portfolio-project-card[data-visible='true'] {
+          opacity: 1;
+          transform: perspective(1200px) translateY(0) rotateX(0deg) scale(1);
+        }
+
+        .portfolio-project-card[data-delay='0'] { transition-delay: 0ms; }
+        .portfolio-project-card[data-delay='120'] { transition-delay: 120ms; }
+        .portfolio-project-card[data-delay='240'] { transition-delay: 240ms; }
+        .portfolio-project-card[data-delay='360'] { transition-delay: 360ms; }
+        .portfolio-project-card[data-delay='480'] { transition-delay: 480ms; }
+      `}</style>
       <div className="relative z-10 max-w-5xl mx-auto">
         <h2
-          className={`text-3xl sm:text-4xl font-bold mb-6 text-center ${
-            isDarkMode ? 'text-white' : 'text-slate-900'
-          }`}
+          className={`text-3xl sm:text-4xl font-bold mb-8 text-center transition-all duration-700 ${
+            isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+          } ${isDarkMode ? 'text-white' : 'text-slate-900'}`}
         >
           Featured Projects
         </h2>
         <div ref={ref}>
           <ul className="flex flex-col gap-4">
-            {projects.map(project => (
+            {projects.map((project, index) => (
               <li key={project.id} className="relative z-10 w-full">
-                <ProjectCard project={project} isDarkMode={isDarkMode} />
+                <ProjectCard
+                  project={project}
+                  isDarkMode={isDarkMode}
+                  isVisible={isVisible}
+                  revealDelay={index * 120}
+                />
               </li>
             ))}
           </ul>
@@ -799,197 +932,25 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
 const AboutSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const { ref: skillsRef, isVisible: skillsVisible } = useScrollAnimation()
   const skills = [
-    { name: 'React', icon: SiReact, color: '#61DAFB', rarity: 'ultimate' },
-    { name: 'Next.js', icon: SiNextdotjs, color: '#FFFFFF', rarity: 'ultimate' },
-    { name: 'TypeScript', icon: SiTypescript, color: '#3178C6', rarity: 'ultimate' },
-    { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#06B6D4', rarity: 'ultimate' },
-    { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E', rarity: 'ghost' },
-    { name: 'HTML', icon: SiHtml5, color: '#E34C26', rarity: 'ghost' },
-    { name: 'CSS', icon: FaCss3Alt, color: '#1572B6', rarity: 'ghost' },
-    { name: 'Git', icon: SiGit, color: '#F1502F', rarity: 'ghost' },
-    { name: 'Jest', icon: SiJest, color: '#C21325', rarity: 'secret' },
-    { name: 'React Testing Library', icon: FaFlask, color: '#E33332', rarity: 'secret' },
-    { name: 'Firebase', icon: SiFirebase, color: '#FFCA28', rarity: 'secret' },
-    { name: 'Responsive Design', icon: MdPhoneIphone, color: '#3B82F6', rarity: 'secret' },
+    { name: 'React', icon: SiReact, color: '#61DAFB' },
+    { name: 'Next.js', icon: SiNextdotjs, color: '#FFFFFF' },
+    { name: 'TypeScript', icon: SiTypescript, color: '#3178C6' },
+    { name: 'Tailwind CSS', icon: SiTailwindcss, color: '#06B6D4' },
+    { name: 'JavaScript', icon: SiJavascript, color: '#F7DF1E' },
+    { name: 'HTML', icon: SiHtml5, color: '#E34C26' },
+    { name: 'CSS', icon: FaCss3Alt, color: '#1572B6' },
+    { name: 'Git', icon: SiGit, color: '#F1502F' },
+    { name: 'Jest', icon: SiJest, color: '#C21325' },
+    { name: 'React Testing Library', icon: FaFlask, color: '#E33332' },
+    { name: 'Firebase', icon: SiFirebase, color: '#FFCA28' },
+    { name: 'Responsive Design', icon: MdPhoneIphone, color: '#3B82F6' },
   ]
-  const rarityColumns = ['ultimate', 'ghost', 'secret'] as const
 
   return (
     <section
       id="about"
       className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}
     >
-      <style>{`
-        @keyframes ultimateFoilShift {
-          0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
-          50% { background-position: 90% 40%, 40% 80%, 100% 20%; }
-          100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
-        }
-
-        @keyframes ultimateSparkleSweep {
-          0% { transform: translateX(-130%) rotate(13deg); opacity: 0; }
-          25% { opacity: 0.5; }
-          50% { opacity: 0.75; }
-          100% { transform: translateX(130%) rotate(13deg); opacity: 0; }
-        }
-
-        @keyframes secretRareLines {
-          0% { background-position: 0% 0%, 0% 0%; }
-          100% { background-position: 120% 0%, -120% 0%; }
-        }
-
-        @keyframes secretHoverSweep {
-          0% { transform: translateX(-130%) rotate(14deg); opacity: 0; }
-          20% { opacity: 0.35; }
-          50% { opacity: 0.7; }
-          100% { transform: translateX(130%) rotate(14deg); opacity: 0; }
-        }
-
-        @keyframes secretColumnShimmerLtr {
-          0% { transform: translateX(-60%) rotate(14deg); opacity: 0.2; }
-          50% { opacity: 0.85; }
-          100% { transform: translateX(60%) rotate(14deg); opacity: 0.2; }
-        }
-
-        @keyframes secretColumnShimmerRtl {
-          0% { transform: translateX(60%) rotate(14deg); opacity: 0.2; }
-          50% { opacity: 0.85; }
-          100% { transform: translateX(-60%) rotate(14deg); opacity: 0.2; }
-        }
-
-        .portfolio-skill-card {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 88px;
-          overflow: hidden;
-          padding: 0.75rem 0.5rem;
-          border-radius: 0.375rem;
-          border: 1px solid transparent;
-          transition: transform 500ms ease, opacity 500ms ease, box-shadow 300ms ease;
-        }
-
-        .portfolio-skill-card--visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .portfolio-skill-card--hidden {
-          opacity: 0;
-          transform: translateY(1rem);
-        }
-
-        .portfolio-skill-card:hover {
-          transform: translateY(-2px);
-        }
-
-        .portfolio-skill-card__overlay {
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          opacity: 0.82;
-          mix-blend-mode: screen;
-          transition: opacity 300ms ease, filter 300ms ease;
-        }
-
-        .portfolio-skill-card[data-rarity='ultimate'][data-dark='true'] {
-          background: linear-gradient(136deg, rgba(124,58,237,0.32), rgba(217,119,6,0.26) 42%, rgba(20,184,166,0.24) 80%), repeating-linear-gradient(45deg, rgba(255,255,255,0.12) 0px, rgba(255,255,255,0.12) 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 6px), radial-gradient(circle at 24% 20%, rgba(255,255,255,0.3), transparent 56%);
-          border-color: rgba(254,240,138,0.55);
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14), 0 8px 20px rgba(217,119,6,0.26);
-        }
-
-        .portfolio-skill-card[data-rarity='ultimate'][data-dark='false'] {
-          background: linear-gradient(136deg, rgba(124,58,237,0.22), rgba(217,119,6,0.2) 42%, rgba(20,184,166,0.18) 80%), repeating-linear-gradient(45deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 2px, rgba(255,255,255,0.04) 2px, rgba(255,255,255,0.04) 6px), radial-gradient(circle at 24% 20%, rgba(255,255,255,0.38), transparent 56%);
-          border-color: rgba(217,119,6,0.45);
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4), 0 6px 16px rgba(217,119,6,0.2);
-        }
-
-        .portfolio-skill-card[data-rarity='ghost'][data-dark='true'] {
-          background: linear-gradient(150deg, rgba(148,163,184,0.1), rgba(148,163,184,0.03) 60%, rgba(148,163,184,0.08));
-          border-color: rgba(226,232,240,0.2);
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(15,23,42,0.35), inset 0 0 24px rgba(34,211,238,0.12);
-        }
-
-        .portfolio-skill-card[data-rarity='ghost'][data-dark='false'] {
-          background: linear-gradient(150deg, rgba(148,163,184,0.12), rgba(148,163,184,0.04) 60%, rgba(148,163,184,0.1));
-          border-color: rgba(100,116,139,0.2);
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2), 0 2px 8px rgba(15,23,42,0.15), inset 0 0 24px rgba(15,23,42,0.08);
-        }
-
-        .portfolio-skill-card[data-rarity='secret'][data-dark='true'] {
-          background: repeating-linear-gradient(112deg, rgba(196,181,253,0.22) 0px, rgba(196,181,253,0.22) 2px, rgba(167,139,250,0.07) 2px, rgba(167,139,250,0.07) 7px), repeating-linear-gradient(68deg, rgba(244,114,182,0.16) 0px, rgba(244,114,182,0.16) 2px, rgba(14,165,233,0.06) 2px, rgba(14,165,233,0.06) 8px), linear-gradient(142deg, rgba(30,41,59,0.84), rgba(15,23,42,0.9));
-          border-color: rgba(196,181,253,0.35);
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 4px 12px rgba(109,40,217,0.2);
-          animation: secretRareLines 8s linear infinite;
-        }
-
-        .portfolio-skill-card[data-rarity='secret'][data-dark='false'] {
-          background: repeating-linear-gradient(112deg, rgba(196,181,253,0.2) 0px, rgba(196,181,253,0.2) 2px, rgba(167,139,250,0.06) 2px, rgba(167,139,250,0.06) 7px), repeating-linear-gradient(68deg, rgba(244,114,182,0.14) 0px, rgba(244,114,182,0.14) 2px, rgba(14,165,233,0.05) 2px, rgba(14,165,233,0.05) 8px), linear-gradient(142deg, rgba(241,245,249,0.9), rgba(226,232,240,0.9));
-          border-color: rgba(167,139,250,0.35);
-          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.24), 0 4px 12px rgba(109,40,217,0.16);
-          animation: secretRareLines 8s linear infinite;
-        }
-
-        .portfolio-skill-card[data-column='left'] .portfolio-skill-card__overlay {
-          left: 0;
-          width: 50%;
-          clip-path: polygon(0 0, 62% 0, 50% 100%, 0 100%);
-          transform: skewX(-12deg);
-          transform-origin: left center;
-        }
-
-        .portfolio-skill-card[data-column='right'] .portfolio-skill-card__overlay {
-          right: 0;
-          width: 50%;
-          clip-path: polygon(38% 0, 100% 0, 100% 100%, 50% 100%);
-          transform: skewX(12deg);
-          transform-origin: right center;
-        }
-
-        .portfolio-skill-card[data-column='middle'] .portfolio-skill-card__overlay {
-          inset: 0.5rem;
-          border-radius: inherit;
-          opacity: 0;
-        }
-
-        .portfolio-skill-card[data-column='middle']:hover .portfolio-skill-card__overlay {
-          opacity: 1;
-        }
-
-        .portfolio-skill-card[data-rarity='ultimate'] .portfolio-skill-card__overlay {
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), rgba(255,255,255,0.08), transparent);
-          animation: ultimateSparkleSweep 3.5s ease-in-out infinite;
-        }
-
-        .portfolio-skill-card[data-rarity='ghost'] .portfolio-skill-card__overlay {
-          background: linear-gradient(160deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
-          opacity: 0.72;
-        }
-
-        .portfolio-skill-card[data-rarity='secret'] .portfolio-skill-card__overlay {
-          background: linear-gradient(135deg, rgba(34,211,238,0.12), rgba(168,85,247,0.12) 42%, rgba(249,115,22,0.1) 72%, rgba(74,222,128,0.1));
-          opacity: 0.9;
-        }
-
-        .portfolio-skill-card__icon {
-          position: relative;
-          z-index: 1;
-          opacity: 0.98;
-        }
-
-        .portfolio-skill-card[data-rarity='ghost'] .portfolio-skill-card__icon {
-          filter: drop-shadow(0 0 9px rgba(255,255,255,0.24)) saturate(1.25);
-        }
-
-        .portfolio-skill-card[data-rarity='ultimate'] .portfolio-skill-card__icon {
-          filter: drop-shadow(0 0 8px rgba(255,255,255,0.28)) saturate(1.08);
-        }
-
-        .portfolio-skill-card[data-rarity='secret'] .portfolio-skill-card__icon {
-          filter: drop-shadow(0 0 6px rgba(167,139,250,0.28)) saturate(1.15);
-        }
-      `}</style>
       <div className="max-w-4xl mx-auto">
         <h2
           className={`text-3xl sm:text-4xl font-bold mb-6 ${
@@ -1003,48 +964,37 @@ const AboutSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
             isDarkMode ? 'text-slate-300' : 'text-slate-700'
           }`}
         >
-          Self-taught frontend developer with 2+ months of intensive React development. I've
-          completed 5 projects including Treact, Movie Project, Yugioh Database, NFT Marketplace,
-          and Summarist. Passionate about self-improvement, video games, and becoming a business
-          owner. Currently focused on learning diverse technologies to become a successful software
-          engineer and entrepreneur. I'm committed to building modern, accessible web applications
-          while constantly expanding my technical skillset.
+          Self-taught frontend developer focused on React, Next.js, TypeScript, and modern web
+          development. I've completed 5 projects including Treact, Movie Project, Yugioh Database,
+          NFT Marketplace, and Summarist. Passionate about self-improvement, video games, and
+          becoming a business owner. Currently focused on learning diverse technologies to become a
+          successful software engineer and entrepreneur. I'm committed to building modern,
+          accessible web applications while constantly expanding my technical skillset.
         </p>
         <div>
           <h3 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             Skills
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" ref={skillsRef}>
-            {rarityColumns.map((rarity, columnIndex) => {
-              const columnSkills = skills.filter(skill => skill.rarity === rarity)
-              const columnName = columnIndex === 0 ? 'left' : columnIndex === 1 ? 'middle' : 'right'
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4" ref={skillsRef}>
+            {skills.map(skill => {
+              const IconComponent = skill.icon
+              const iconColor =
+                skill.name === 'Next.js' ? (isDarkMode ? '#FFFFFF' : '#0f172a') : skill.color
 
               return (
-                <div key={rarity} className="flex flex-col gap-4">
-                  {columnSkills.map(skill => {
-                    const IconComponent = skill.icon
-                    const iconColor =
-                      skill.name === 'Next.js' ? (isDarkMode ? '#FFFFFF' : '#0f172a') : skill.color
-
-                    return (
-                      <div
-                        key={skill.name}
-                        title={skill.name}
-                        aria-label={skill.name}
-                        data-rarity={skill.rarity}
-                        data-column={columnName}
-                        data-dark={isDarkMode}
-                        className={`portfolio-skill-card group ${skillsVisible ? 'portfolio-skill-card--visible' : 'portfolio-skill-card--hidden'}`}
-                      >
-                        <span className="portfolio-skill-card__overlay" aria-hidden="true" />
-                        <IconComponent
-                          size={34}
-                          color={iconColor}
-                          className="portfolio-skill-card__icon"
-                        />
-                      </div>
-                    )
-                  })}
+                <div
+                  key={skill.name}
+                  title={skill.name}
+                  aria-label={skill.name}
+                  className={`flex items-center justify-center rounded-lg border p-4 transition-all duration-300 ${
+                    skillsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+                  } ${
+                    isDarkMode
+                      ? 'border-slate-700/70 bg-slate-900/60 hover:bg-slate-900'
+                      : 'border-slate-300 bg-white/70 hover:bg-white'
+                  }`}
+                >
+                  <IconComponent size={34} color={iconColor} />
                 </div>
               )
             })}
