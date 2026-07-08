@@ -50,6 +50,7 @@ const EMAILJS_PUBLIC_KEY = 'G1CS-QLbgNF8atJUw'
 interface Project {
   id: number
   title: string
+  completed: string
   description: string
   techStack: string[]
   liveLink: string
@@ -77,6 +78,7 @@ const projects: Project[] = [
   {
     id: 1,
     title: 'Treact',
+    completed: 'May 20, 2026',
     description:
       'A pixel-perfect React landing page built from a professional Figma design. Demonstrates component architecture, responsive layouts, and clean UI implementation.',
     techStack: ['React', 'JavaScript', 'Tailwind CSS'],
@@ -88,6 +90,7 @@ const projects: Project[] = [
   {
     id: 2,
     title: 'Movie Project',
+    completed: 'May 30, 2026',
     description:
       'A movie discovery app powered by The Movie Database API. Features trending films, search functionality, and detailed movie pages with ratings and cast info.',
     techStack: ['React', 'JavaScript', 'TMDB API', 'CSS'],
@@ -98,6 +101,7 @@ const projects: Project[] = [
   {
     id: 3,
     title: 'Yugioh Database',
+    completed: 'June 6, 2026',
     description:
       'A searchable card database pulling from the Yu-Gi-Oh API. Browse thousands of cards with filtering by type, attribute, and archetype with a clean responsive interface.',
     techStack: ['React', 'TypeScript', 'REST API', 'CSS'],
@@ -108,6 +112,7 @@ const projects: Project[] = [
   {
     id: 4,
     title: 'NFT Marketplace',
+    completed: 'June 12, 2026',
     description:
       'A fully responsive NFT marketplace UI featuring collection browsing, wallet connection flow, and dynamic product pages built with modern frontend tooling.',
     techStack: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
@@ -118,6 +123,7 @@ const projects: Project[] = [
   {
     id: 5,
     title: 'Summarist',
+    completed: 'June 27, 2026',
     description:
       'AI-powered book summary app with audiobook integration, Firebase authentication, and Stripe payments. Users can read or listen to book summaries with a premium subscription model.',
     techStack: ['React', 'Next.js', 'TypeScript', 'Firebase', 'Stripe'],
@@ -177,7 +183,17 @@ const Header = ({
 
 // ===== Component: Halo Rings Animation =====
 
-const HaloRings = ({ opacity, isPulsing }: { opacity: number; isPulsing: boolean }) => {
+const HaloRings = ({
+  opacity,
+  isPulsing,
+  scale,
+  offsetY,
+}: {
+  opacity: number
+  isPulsing: boolean
+  scale: number
+  offsetY: number
+}) => {
   const ringStyle = `
     @keyframes rotateRing1 {
       from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
@@ -217,7 +233,9 @@ const HaloRings = ({ opacity, isPulsing }: { opacity: number; isPulsing: boolean
         height: '100%',
         perspective: '1200px',
         opacity,
-        transition: 'opacity 0.3s ease-out',
+        transform: `translateY(${offsetY}px) scale(${scale})`,
+        transformOrigin: 'center center',
+        transition: 'opacity 0.3s ease-out, transform 0.35s ease-out',
       }}
     >
       {[0, 1, 2, 3, 4, 5, 6].map(i => (
@@ -248,28 +266,87 @@ const HaloRings = ({ opacity, isPulsing }: { opacity: number; isPulsing: boolean
               cy="100"
               r="80"
               fill="none"
-              stroke={isPulsing ? '#22d3ee' : '#2d6a4f'}
+              stroke="#2d6a4f"
               strokeWidth="6"
               strokeLinecap="round"
               opacity={opacity}
-              style={{
-                transition: isPulsing ? 'stroke 0.05s ease' : 'stroke 0.4s ease-out',
-                filter: isPulsing ? 'drop-shadow(0 0 6px rgba(34,211,238,0.9))' : 'none',
-              }}
             />
           </svg>
         </div>
       ))}
-      {/* Pulse overlay */}
+
+      <style>{`
+        @keyframes centerFirePulse {
+          0% {
+            transform: translate(-50%, -50%) scale(0.1);
+            opacity: 0.95;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+          }
+        }
+
+        @keyframes centerFireWaveFill {
+          0% {
+            transform: translate(-50%, -50%) scale(0.05);
+            opacity: 0.4;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+          }
+        }
+      `}</style>
+
+      {/* Center flash */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          left: '50%',
+          top: '50%',
+          width: '3px',
+          height: '3px',
           borderRadius: '50%',
-          background:
-            'radial-gradient(circle, rgba(34,211,238,0.25) 0%, rgba(34,211,238,0.1) 50%, transparent 70%)',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: '#22d3ee',
+          boxShadow: '0 0 6px rgba(34,211,238,0.95)',
           opacity: isPulsing ? 1 : 0,
           transition: isPulsing ? 'opacity 0.05s ease' : 'opacity 0.45s ease-out',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Outgoing pulse from center */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: '170vmax',
+          height: '170vmax',
+          borderRadius: '50%',
+          border: '2.5px solid rgba(34,211,238,0.95)',
+          boxShadow: '0 0 22px rgba(34,211,238,0.55)',
+          transform: 'translate(-50%, -50%) scale(0)',
+          animation: isPulsing ? 'centerFirePulse 0.6s ease-out' : 'none',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Soft expanding wave fill */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: '170vmax',
+          height: '170vmax',
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(34,211,238,0.18) 0%, rgba(34,211,238,0.08) 18%, rgba(34,211,238,0.03) 40%, transparent 70%)',
+          transform: 'translate(-50%, -50%) scale(0)',
+          animation: isPulsing ? 'centerFireWaveFill 0.6s ease-out' : 'none',
           pointerEvents: 'none',
         }}
       />
@@ -280,41 +357,73 @@ const HaloRings = ({ opacity, isPulsing }: { opacity: number; isPulsing: boolean
 // ===== Component: Hero Section =====
 
 const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
-  const ringsContainerRef = useRef<HTMLDivElement>(null)
+  const heroSectionRef = useRef<HTMLElement>(null)
   const [ringsOpacity, setRingsOpacity] = useState(1)
+  const [ringsScale, setRingsScale] = useState(1)
+  const [ringsOffsetY, setRingsOffsetY] = useState(0)
   const [isPulsing, setIsPulsing] = useState(false)
 
   useEffect(() => {
     const handleClick = () => {
       setIsPulsing(true)
-      setTimeout(() => setIsPulsing(false), 500)
+      setTimeout(() => setIsPulsing(false), 600)
     }
     window.addEventListener('click', handleClick)
     return () => window.removeEventListener('click', handleClick)
   }, [])
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setRingsOpacity(entry.intersectionRatio)
-      },
-      { threshold: Array.from({ length: 11 }, (_, i) => i / 10) }
-    )
+    let frameId = 0
 
-    if (ringsContainerRef.current) {
-      observer.observe(ringsContainerRef.current)
+    const updateRingsFromScroll = () => {
+      const heroElement = heroSectionRef.current
+      const projectsElement = document.getElementById('projects')
+
+      if (!heroElement || !projectsElement) return
+
+      const scrollY = window.scrollY
+      const viewportHeight = window.innerHeight
+      const heroTop = heroElement.offsetTop
+      const projectsTop = projectsElement.offsetTop
+
+      const start = heroTop + 40
+      const end = projectsTop + viewportHeight * 0.35
+      const distance = Math.max(1, end - start)
+      const rawProgress = (scrollY - start) / distance
+      const progress = Math.min(1, Math.max(0, rawProgress))
+      const fadeProgress = Math.min(1, Math.max(0, (progress - 0.12) / 0.88))
+      const easedFade = fadeProgress * fadeProgress * (3 - 2 * fadeProgress)
+
+      // Keep rings visible as they descend, then let cards naturally cover them.
+      setRingsOpacity(1 - easedFade * 0.55)
+      setRingsScale(1 - progress * 0.72)
+      setRingsOffsetY(progress * 760)
     }
 
-    return () => observer.disconnect()
+    const handleScroll = () => {
+      cancelAnimationFrame(frameId)
+      frameId = requestAnimationFrame(updateRingsFromScroll)
+    }
+
+    updateRingsFromScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleScroll)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
+    }
   }, [])
 
   return (
     <section
+      ref={heroSectionRef}
       id="home"
       className={`relative pt-20 pb-8 px-4 sm:px-6 lg:px-8 text-left ${
         isDarkMode
           ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
-          : 'bg-gradient-to-r from-slate-50 via-slate-100 to-slate-50 text-slate-900'
+          : 'bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 text-slate-900'
       }`}
       style={{
         backgroundSize: '200% 200%',
@@ -354,6 +463,14 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           0%, 100% { background-position: 0% 0%; }
           50% { background-position: 2% 1%; }
         }
+        @keyframes starDriftA {
+          0%, 100% { transform: translate(0px, 0px); }
+          50% { transform: translate(6px, -4px); }
+        }
+        @keyframes starDriftB {
+          0%, 100% { transform: translate(0px, 0px); }
+          50% { transform: translate(-5px, 5px); }
+        }
       `}</style>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {Array.from({ length: 120 }, (_, i) => (
@@ -369,6 +486,8 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
               backgroundColor: isDarkMode ? '#ffffff' : '#1e293b',
               opacity: Math.random() * 0.6 + 0.4,
               boxShadow: isDarkMode ? '0 0 2px rgba(255, 255, 255, 0.4)' : 'none',
+              animation: `${i % 2 === 0 ? 'starDriftA' : 'starDriftB'} 10s ease-in-out infinite`,
+              animationDelay: `-${(i % 10) * 0.7}s`,
             }}
           />
         ))}
@@ -397,11 +516,15 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
         </div>
 
         <div
-          ref={ringsContainerRef}
           className="hidden lg:flex flex-1 justify-center items-center"
           style={{ width: '320px', height: '320px' }}
         >
-          <HaloRings opacity={ringsOpacity} isPulsing={isPulsing} />
+          <HaloRings
+            opacity={ringsOpacity}
+            isPulsing={isPulsing}
+            scale={ringsScale}
+            offsetY={ringsOffsetY}
+          />
         </div>
       </div>
     </section>
@@ -417,14 +540,21 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
 
   return (
     <div
-      className={`relative rounded-lg p-6 transition-all duration-300 ${
-        isDarkMode ? 'bg-slate-800 text-white' : 'bg-slate-50 text-slate-900'
+      className={`relative z-10 rounded-lg p-6 transition-all duration-300 hover:z-30 focus-within:z-30 ${
+        isDarkMode ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-900'
       }`}
       style={glowStyle}
     >
       <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
         {project.title}
       </h3>
+      <p
+        className={`mb-3 text-sm font-medium tracking-wide ${
+          isDarkMode ? 'text-slate-300' : 'text-slate-700'
+        }`}
+      >
+        Completed: {project.completed}
+      </p>
       <p
         className={`mb-4 text-sm sm:text-base ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}
       >
@@ -445,17 +575,30 @@ const ProjectCard = ({ project, isDarkMode }: { project: Project; isDarkMode: bo
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <a
-          href={project.liveLink}
-          className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-            isDarkMode
-              ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-400 active:bg-yellow-600 focus:ring-yellow-400 focus:ring-offset-slate-800'
-              : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500'
-          }`}
-          aria-label={`View live demo of ${project.title}`}
-        >
-          Live Demo
-        </a>
+        <div className="relative group inline-flex items-center">
+          {project.thumbnail && (
+            <div className="pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-64 overflow-hidden rounded-md border border-blue-400/50 bg-slate-950/95 shadow-2xl opacity-0 -translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 md:block">
+              <Image
+                src={project.thumbnail}
+                alt={`${project.title} live demo preview`}
+                width={1200}
+                height={630}
+                className="h-36 w-full object-cover"
+              />
+            </div>
+          )}
+          <a
+            href={project.liveLink}
+            className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              isDarkMode
+                ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-400 active:bg-yellow-600 focus:ring-yellow-400 focus:ring-offset-slate-800'
+                : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500'
+            }`}
+            aria-label={`View live demo of ${project.title}`}
+          >
+            Live Demo
+          </a>
+        </div>
         <div className="relative group inline-flex items-center">
           {project.thumbnail && (
             <div className="pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-64 overflow-hidden rounded-md border border-cyan-400/50 bg-slate-950/95 shadow-2xl opacity-0 translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 md:block">
@@ -495,7 +638,7 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
       className={`relative py-14 px-4 sm:px-6 lg:px-8 ${
         isDarkMode
           ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
-          : 'bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 text-slate-900'
+          : 'bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 text-slate-900'
       }`}
       style={{
         backgroundSize: '200% 200%',
@@ -516,6 +659,8 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
               backgroundColor: isDarkMode ? '#ffffff' : '#1e293b',
               opacity: (i % 7) * 0.08 + 0.2,
               boxShadow: isDarkMode ? '0 0 2px rgba(255,255,255,0.4)' : 'none',
+              animation: `${i % 2 === 0 ? 'starDriftA' : 'starDriftB'} 10s ease-in-out infinite`,
+              animationDelay: `-${(i % 10) * 0.7}s`,
             }}
           />
         ))}
@@ -533,7 +678,7 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
             {projects.map((project, index) => (
               <li
                 key={project.id}
-                className={`w-full transition-all duration-700 ${
+                className={`relative z-10 w-full transition-all duration-700 hover:z-40 ${
                   isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
                 style={{ transitionDelay: isVisible ? `${index * 120}ms` : '0ms' }}
@@ -570,7 +715,7 @@ const AboutSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <section
       id="about"
-      className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}
+      className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}
     >
       <div className="max-w-4xl mx-auto">
         <h2
@@ -704,7 +849,7 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <section
       id="contact"
-      className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-900' : 'bg-slate-50'}`}
+      className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-900' : 'bg-slate-100'}`}
     >
       <div className="max-w-2xl mx-auto">
         <h2
@@ -758,7 +903,7 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
               value={formData.name}
               onChange={handleChange}
               aria-describedby={errors.name ? 'name-error' : undefined}
-              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-50 text-slate-900 border-slate-300 focus:ring-blue-500 focus:border-transparent'}`}
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-100 text-slate-900 border-slate-400 focus:ring-blue-500 focus:border-transparent'}`}
               placeholder="Your name"
             />
             {errors.name && (
@@ -785,7 +930,7 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
               value={formData.email}
               onChange={handleChange}
               aria-describedby={errors.email ? 'email-error' : undefined}
-              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-50 text-slate-900 border-slate-300 focus:ring-blue-500 focus:border-transparent'}`}
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-100 text-slate-900 border-slate-400 focus:ring-blue-500 focus:border-transparent'}`}
               placeholder="your.email@example.com"
             />
             {errors.email && (
@@ -811,7 +956,7 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
               name="subject"
               value={formData.subject}
               onChange={handleChange}
-              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-50 text-slate-900 border-slate-300 focus:ring-blue-500 focus:border-transparent'}`}
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 border ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-100 text-slate-900 border-slate-400 focus:ring-blue-500 focus:border-transparent'}`}
               placeholder="What's this about?"
             />
           </div>
@@ -830,7 +975,7 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
               onChange={handleChange}
               aria-describedby={errors.message ? 'message-error' : undefined}
               rows={6}
-              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 resize-none ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-50 text-slate-900 border-slate-300 focus:ring-blue-500 focus:border-transparent'}`}
+              className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 resize-none ${isDarkMode ? 'bg-slate-800 text-white border-slate-600 focus:ring-blue-500 focus:border-transparent' : 'bg-slate-100 text-slate-900 border-slate-400 focus:ring-blue-500 focus:border-transparent'}`}
               placeholder="Your message here..."
             />
             {errors.message && (
@@ -877,7 +1022,7 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
   return (
     <footer
-      className={`py-12 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-950' : 'bg-slate-100'}`}
+      className={`py-12 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-950' : 'bg-slate-200'}`}
     >
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-6">
@@ -1040,7 +1185,7 @@ export default function Module5Portfolio() {
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode)
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
+    <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-slate-100'}`}>
       <ScopeCursor />
       <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       <main>
