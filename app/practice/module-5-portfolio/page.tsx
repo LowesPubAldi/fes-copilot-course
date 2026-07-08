@@ -15,7 +15,7 @@ import {
   SiFirebase,
 } from 'react-icons/si'
 import { MdPhoneIphone } from 'react-icons/md'
-import { FaCss3Alt, FaFlask } from 'react-icons/fa'
+import { FaCss3Alt, FaFlask, FaMousePointer } from 'react-icons/fa'
 
 // ===== EmailJS Config =====
 
@@ -138,9 +138,13 @@ const projects: Project[] = [
 const Header = ({
   isDarkMode,
   toggleDarkMode,
+  cursorMode,
+  toggleCursorMode,
 }: {
   isDarkMode: boolean
   toggleDarkMode: () => void
+  cursorMode: 'scope' | 'plasma'
+  toggleCursorMode: () => void
 }) => {
   const navLinks = ['Home', 'About', 'Projects', 'Contact']
 
@@ -149,7 +153,13 @@ const Header = ({
       className={`portfolio-breathe-bg fixed top-0 w-full shadow-lg z-50 ${isDarkMode ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white'}`}
     >
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
-        <div className="text-lg font-bold tracking-tight w-44 shrink-0">Josh Van Minsel</div>
+        <a
+          href="/resume.pdf"
+          className="text-lg font-bold tracking-tight w-44 shrink-0 hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+          aria-label="Open resume"
+        >
+          Josh Van Minsel
+        </a>
         <ul className="hidden sm:flex gap-10 flex-1 justify-center">
           {navLinks.map(link => (
             <li key={link}>
@@ -163,7 +173,18 @@ const Header = ({
             </li>
           ))}
         </ul>
-        <div className="w-40 flex justify-end">
+        <div className="w-48 flex justify-end gap-2">
+          <button
+            onClick={toggleCursorMode}
+            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border leading-none transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-slate-900 ${
+              cursorMode === 'plasma'
+                ? 'border-cyan-400 text-cyan-200 hover:text-cyan-100 focus:ring-cyan-400'
+                : 'border-emerald-500 text-emerald-200 hover:text-emerald-100 focus:ring-emerald-400'
+            }`}
+            aria-label={`Switch to ${cursorMode === 'plasma' ? 'gun scope' : 'plasma pistol'} cursor`}
+          >
+            <FaMousePointer size={13} aria-hidden="true" />
+          </button>
           <button
             onClick={toggleDarkMode}
             className="text-xl p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-slate-900 hover:text-yellow-300 focus:ring-yellow-400"
@@ -1435,7 +1456,7 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
 // ===== Component: Scope Cursor =====
 
-const ScopeCursor = () => {
+const ScopeCursor = ({ cursorMode }: { cursorMode: 'scope' | 'plasma' }) => {
   const [isHovering, setIsHovering] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
@@ -1461,7 +1482,21 @@ const ScopeCursor = () => {
     }
   }, [])
 
-  const color = isHovering ? '#22d3ee' : '#2d6a4f'
+  const cursorColors =
+    cursorMode === 'plasma'
+      ? {
+          base: isHovering ? '#67e8f9' : '#22d3ee',
+          core: isHovering ? '#f8fafc' : '#cffafe',
+          ring: isHovering ? '#f8fafc' : '#67e8f9',
+        }
+      : {
+          base: isHovering ? '#22c55e' : '#2d6a4f',
+          core: isHovering ? '#f8fafc' : '#86efac',
+          ring: isHovering ? '#f8fafc' : '#22c55e',
+        }
+
+  const cursorClass =
+    cursorMode === 'plasma' ? 'portfolio-scope-cursor--plasma' : 'portfolio-scope-cursor--scope'
 
   return (
     <>
@@ -1498,78 +1533,187 @@ const ScopeCursor = () => {
 
         .portfolio-scope-cursor--hover .portfolio-scope-cursor__svg {
           transform: scale(1.35);
-          filter: drop-shadow(0 0 5px rgba(34,211,238,0.8));
+          filter: var(--portfolio-cursor-glow);
         }
 
         .portfolio-scope-cursor:not(.portfolio-scope-cursor--hover) .portfolio-scope-cursor__svg {
           transform: scale(1);
-          filter: drop-shadow(0 0 3px rgba(45,106,79,0.6));
+          filter: var(--portfolio-cursor-glow);
         }
 
         .portfolio-scope-cursor__shape {
           transition: stroke 0.15s ease, fill 0.15s ease;
         }
+
+        .portfolio-scope-cursor__inner-ring {
+          transform: translate(-50%, -50%) scale(1);
+          filter: drop-shadow(0 0 6px rgba(34,211,238,0.45));
+        }
+
+        .portfolio-scope-cursor__inner-core {
+          transform: translate(-50%, -50%);
+          filter: var(--portfolio-cursor-core-glow);
+        }
+
+        .portfolio-scope-cursor--hover .portfolio-scope-cursor__inner-ring {
+          filter: var(--portfolio-cursor-ring-glow);
+        }
+
+        .portfolio-scope-cursor--hover .portfolio-scope-cursor__inner-core {
+          filter: var(--portfolio-cursor-core-hover-glow);
+        }
+
+        .portfolio-scope-cursor--scope {
+          --portfolio-cursor-glow: drop-shadow(0 0 5px rgba(45,106,79,0.8));
+          --portfolio-cursor-core-glow: drop-shadow(0 0 5px rgba(45,106,79,0.8));
+          --portfolio-cursor-ring-glow: drop-shadow(0 0 8px rgba(34,197,94,0.85));
+          --portfolio-cursor-core-hover-glow: drop-shadow(0 0 10px rgba(255,255,255,0.65));
+        }
+
+        .portfolio-scope-cursor--plasma {
+          --portfolio-cursor-glow: drop-shadow(0 0 6px rgba(34,211,238,0.8));
+          --portfolio-cursor-core-glow: drop-shadow(0 0 6px rgba(103,232,249,0.85));
+          --portfolio-cursor-ring-glow: drop-shadow(0 0 10px rgba(103,232,249,0.9));
+          --portfolio-cursor-core-hover-glow: drop-shadow(0 0 10px rgba(255,255,255,0.7));
+        }
       `}</style>
       <div
-        className={`portfolio-scope-cursor ${isVisible ? 'portfolio-scope-cursor--visible' : ''} ${isHovering ? 'portfolio-scope-cursor--hover' : ''}`}
+        className={`portfolio-scope-cursor ${cursorClass} ${isVisible ? 'portfolio-scope-cursor--visible' : ''} ${isHovering ? 'portfolio-scope-cursor--hover' : ''}`}
       >
         <svg width={40} height={40} viewBox="0 0 40 40" className="portfolio-scope-cursor__svg">
-          {/* Outer ring */}
-          <circle
-            cx="20"
-            cy="20"
-            r="9"
-            fill="none"
-            stroke={color}
-            strokeWidth="1.5"
-            className="portfolio-scope-cursor__shape"
-          />
-          {/* Center dot */}
-          <circle cx="20" cy="20" r="1.5" fill={color} className="portfolio-scope-cursor__shape" />
-          {/* Top tick */}
-          <line
-            x1="20"
-            y1="5"
-            x2="20"
-            y2="9"
-            stroke={color}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            className="portfolio-scope-cursor__shape"
-          />
-          {/* Bottom tick */}
-          <line
-            x1="20"
-            y1="31"
-            x2="20"
-            y2="35"
-            stroke={color}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            className="portfolio-scope-cursor__shape"
-          />
-          {/* Left tick */}
-          <line
-            x1="5"
-            y1="20"
-            x2="9"
-            y2="20"
-            stroke={color}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            className="portfolio-scope-cursor__shape"
-          />
-          {/* Right tick */}
-          <line
-            x1="31"
-            y1="20"
-            x2="35"
-            y2="20"
-            stroke={color}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            className="portfolio-scope-cursor__shape"
-          />
+          {cursorMode === 'scope' ? (
+            <>
+              <circle
+                cx="20"
+                cy="20"
+                r="9"
+                fill="none"
+                stroke={cursorColors.base}
+                strokeWidth="1.5"
+                className="portfolio-scope-cursor__shape"
+              />
+              <circle
+                cx="20"
+                cy="20"
+                r="6.5"
+                fill="none"
+                stroke={cursorColors.ring}
+                strokeWidth="1.25"
+                className="portfolio-scope-cursor__shape portfolio-scope-cursor__inner-ring"
+              />
+              <circle
+                cx="20"
+                cy="20"
+                r="1.5"
+                fill={cursorColors.core}
+                className="portfolio-scope-cursor__shape portfolio-scope-cursor__inner-core"
+              />
+              <line
+                x1="20"
+                y1="5"
+                x2="20"
+                y2="9"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+              <line
+                x1="20"
+                y1="31"
+                x2="20"
+                y2="35"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+              <line
+                x1="5"
+                y1="20"
+                x2="9"
+                y2="20"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+              <line
+                x1="31"
+                y1="20"
+                x2="35"
+                y2="20"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+            </>
+          ) : (
+            <>
+              <polygon
+                points="20,7 30,20 20,33 10,20"
+                fill="none"
+                stroke={cursorColors.base}
+                strokeWidth="1.6"
+                className="portfolio-scope-cursor__shape"
+              />
+              <polygon
+                points="20,12.5 25,20 20,27.5 15,20"
+                fill="none"
+                stroke={cursorColors.ring}
+                strokeWidth="1.2"
+                className="portfolio-scope-cursor__shape"
+              />
+              <line
+                x1="20"
+                y1="5"
+                x2="20"
+                y2="9"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+              <line
+                x1="20"
+                y1="31"
+                x2="20"
+                y2="35"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+              <line
+                x1="5"
+                y1="20"
+                x2="9"
+                y2="20"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+              <line
+                x1="31"
+                y1="20"
+                x2="35"
+                y2="20"
+                stroke={cursorColors.core}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                className="portfolio-scope-cursor__shape"
+              />
+              <circle
+                cx="20"
+                cy="20"
+                r="1.3"
+                fill={cursorColors.core}
+                className="portfolio-scope-cursor__shape portfolio-scope-cursor__inner-core"
+              />
+            </>
+          )}
         </svg>
       </div>
     </>
@@ -1580,13 +1724,20 @@ const ScopeCursor = () => {
 
 export default function Module5Portfolio() {
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [cursorMode, setCursorMode] = useState<'scope' | 'plasma'>('scope')
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode)
+  const toggleCursorMode = () => setCursorMode(prev => (prev === 'scope' ? 'plasma' : 'scope'))
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-slate-950' : 'bg-slate-100'}`}>
-      <ScopeCursor />
-      <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+      <ScopeCursor cursorMode={cursorMode} />
+      <Header
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        cursorMode={cursorMode}
+        toggleCursorMode={toggleCursorMode}
+      />
       <main>
         <HeroSection isDarkMode={isDarkMode} />
         <ProjectsSection isDarkMode={isDarkMode} />
