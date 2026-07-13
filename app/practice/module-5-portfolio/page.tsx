@@ -85,29 +85,31 @@ const projects: Project[] = [
     techStack: ['React', 'JavaScript', 'Tailwind CSS'],
     liveLink: 'https://module-3-project-final.vercel.app/',
     githubLink: 'https://github.com/LowesPubAldi/Module-3-Project-Final',
-    thumbnail: '/images/treact-thumbnail.svg',
+    thumbnail: '/images/treact-main.jpeg',
     glow: { color: '#22d3ee', direction: '-6px -6px 28px' },
   },
   {
     id: 2,
-    title: 'Movie Project',
+    title: 'Titlescope',
     completed: 'May 30, 2026',
     description:
       'A movie discovery app powered by The Movie Database API. Features trending films, search functionality, and detailed movie pages with ratings and cast info.',
     techStack: ['React', 'JavaScript', 'TMDB API', 'CSS'],
-    liveLink: '#',
-    githubLink: '#',
+    liveLink: 'https://module-5-project.vercel.app/',
+    githubLink: 'https://github.com/LowesPubAldi/Module-5-Project.git',
+    thumbnail: '/images/movie-project-thumbnail.png',
     glow: { color: '#7c3aed', direction: '6px -6px 28px' },
   },
   {
     id: 3,
-    title: 'Yugioh Database',
+    title: 'Shalimar Cards',
     completed: 'June 6, 2026',
     description:
       'A searchable card database pulling from the Yu-Gi-Oh API. Browse thousands of cards with filtering by type, attribute, and archetype with a clean responsive interface.',
     techStack: ['React', 'TypeScript', 'REST API', 'CSS'],
-    liveLink: '#',
-    githubLink: '#',
+    liveLink: 'https://shalimar-cards.vercel.app/',
+    githubLink: 'https://github.com/LowesPubAldi/shalimar-cards.git',
+    thumbnail: '/images/yugioh-database-thumbnail.jpeg',
     glow: { color: '#d97706', direction: '-6px 6px 28px' },
   },
   {
@@ -117,8 +119,9 @@ const projects: Project[] = [
     description:
       'A fully responsive NFT marketplace UI featuring collection browsing, wallet connection flow, and dynamic product pages built with modern frontend tooling.',
     techStack: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
-    liveLink: '#',
-    githubLink: '#',
+    liveLink: 'https://josh-internship.vercel.app/',
+    githubLink: 'https://github.com/LowesPubAldi/josh-internship.git',
+    thumbnail: '/images/nft-marketplace-thumbnail.jpeg',
     glow: { color: '#65a30d', direction: '6px 6px 28px' },
   },
   {
@@ -128,8 +131,9 @@ const projects: Project[] = [
     description:
       'AI-powered book summary app with audiobook integration, Firebase authentication, and Stripe payments. Users can read or listen to book summaries with a premium subscription model.',
     techStack: ['React', 'Next.js', 'TypeScript', 'Firebase', 'Stripe'],
-    liveLink: '#',
-    githubLink: '#',
+    liveLink: 'https://mysummarist.vercel.app/',
+    githubLink: 'https://github.com/LowesPubAldi/summarist.git',
+    thumbnail: '/images/summarist-thumbnail.jpeg',
     glow: { color: '#dc2626', direction: '-6px -6px 28px' },
   },
 ]
@@ -387,15 +391,47 @@ const HaloRings = ({
   )
 }
 
-const StarField = ({ className = '' }: { className?: string }) => {
-  const starSlots = Array.from({ length: 30 }, (_, index) => index + 1)
+const StarField = ({ className = '', isDarkMode }: { className?: string; isDarkMode: boolean }) => {
+  const stars = Array.from({ length: 56 }, (_, index) => {
+    const seed = index + 1
+    const topSeed = ((seed * 53) % 100) / 100
+    return {
+      id: seed,
+      left: (seed * 37) % 100,
+      // Bias stars upward so the hero feels busier while keeping the timeline region cleaner.
+      top: Math.min(92, Math.pow(topSeed, 1.65) * 100),
+      size: 0.8 + ((seed * 17) % 18) / 10,
+      driftX: 3 + ((seed * 19) % 18),
+      driftY: 2 + ((seed * 23) % 14),
+      driftDuration: 5.2 + ((seed * 29) % 22) / 2,
+      twinkleDuration: 1.8 + ((seed * 31) % 13) / 5,
+      driftDelay: -((seed * 7) % 13),
+      twinkleDelay: -((seed * 11) % 9),
+    }
+  })
 
   return (
     <div className={`portfolio-starfield z-0 ${className}`} aria-hidden="true">
-      {starSlots.map(index => (
+      {stars.map(star => (
         <span
-          key={index}
-          className={`portfolio-star portfolio-star-slot-${index} ${index % 2 === 0 ? 'portfolio-star--fast' : 'portfolio-star--slow'}`}
+          key={star.id}
+          className="portfolio-star"
+          style={
+            {
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              '--drift-x': `${star.driftX}px`,
+              '--drift-y': `${star.driftY}px`,
+              '--drift-duration': `${star.driftDuration}s`,
+              '--twinkle-duration': `${star.twinkleDuration}s`,
+              '--drift-delay': `${star.driftDelay}s`,
+              '--twinkle-delay': `${star.twinkleDelay}s`,
+              '--star-color': isDarkMode ? 'rgba(226, 232, 240, 0.96)' : 'rgba(37, 99, 235, 1)',
+              '--star-glow': isDarkMode ? 'rgba(148, 163, 184, 0.85)' : 'rgba(59, 130, 246, 0.81)',
+            } as React.CSSProperties
+          }
         />
       ))}
     </div>
@@ -468,7 +504,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
     <section
       ref={heroSectionRef}
       id="home"
-      className={`portfolio-breathe-bg relative min-h-[116svh] pt-20 pb-28 px-4 sm:px-6 lg:px-8 text-left ${
+      className={`portfolio-breathe-bg relative min-h-[100svh] pt-20 pb-14 px-4 sm:px-6 lg:px-8 text-left ${
         isDarkMode
           ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
           : 'bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 text-slate-900'
@@ -507,21 +543,17 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           0%, 100% { background-position: 0% 0%; }
           50% { background-position: 2% 1%; }
         }
-        @keyframes starDriftA {
-          0%, 100% { transform: translate(0px, 0px); }
-          50% { transform: translate(6px, -4px); }
+        @keyframes starDrift {
+          0% {
+            transform: translate3d(calc(var(--drift-x, 8px) * -1), calc(var(--drift-y, 5px) * -1), 0);
+          }
+          100% {
+            transform: translate3d(var(--drift-x, 8px), var(--drift-y, 5px), 0);
+          }
         }
-        @keyframes starDriftB {
-          0%, 100% { transform: translate(0px, 0px); }
-          50% { transform: translate(-5px, 5px); }
-        }
-        @keyframes starShipDriftA {
-          0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(22px, -36px, 0); }
-        }
-        @keyframes starShipDriftB {
-          0% { transform: translate3d(0, 0, 0); }
-          100% { transform: translate3d(-18px, 30px, 0); }
+        @keyframes starTwinkle {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 0.95; }
         }
 
         .portfolio-starfield {
@@ -535,49 +567,15 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           position: absolute;
           display: block;
           border-radius: 9999px;
-          background-color: currentColor;
-          box-shadow: 0 0 2px currentColor;
-          opacity: 0.45;
+          background-color: var(--star-color, rgba(226, 232, 240, 0.96));
+          box-shadow: 0 0 4px var(--star-glow, rgba(148, 163, 184, 0.85));
+          animation-name: starDrift, starTwinkle;
+          animation-duration: var(--drift-duration, 8s), var(--twinkle-duration, 2.8s);
+          animation-delay: var(--drift-delay, 0s), var(--twinkle-delay, 0s);
+          animation-timing-function: ease-in-out, ease-in-out;
+          animation-iteration-count: infinite, infinite;
+          animation-direction: alternate, alternate;
         }
-
-        .portfolio-star--fast {
-          animation: starShipDriftA 3.2s linear infinite;
-        }
-
-        .portfolio-star--slow {
-          animation: starShipDriftB 4.1s linear infinite;
-        }
-
-        .portfolio-star-slot-1 { left: 8%; top: 12%; width: 2px; height: 2px; }
-        .portfolio-star-slot-2 { left: 17%; top: 26%; width: 1px; height: 1px; }
-        .portfolio-star-slot-3 { left: 24%; top: 9%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-4 { left: 33%; top: 19%; width: 1px; height: 1px; }
-        .portfolio-star-slot-5 { left: 42%; top: 11%; width: 2.5px; height: 2.5px; }
-        .portfolio-star-slot-6 { left: 51%; top: 30%; width: 1px; height: 1px; }
-        .portfolio-star-slot-7 { left: 60%; top: 15%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-8 { left: 69%; top: 24%; width: 1px; height: 1px; }
-        .portfolio-star-slot-9 { left: 77%; top: 10%; width: 2px; height: 2px; }
-        .portfolio-star-slot-10 { left: 85%; top: 18%; width: 1px; height: 1px; }
-        .portfolio-star-slot-11 { left: 92%; top: 34%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-12 { left: 12%; top: 54%; width: 2px; height: 2px; }
-        .portfolio-star-slot-13 { left: 21%; top: 68%; width: 1px; height: 1px; }
-        .portfolio-star-slot-14 { left: 30%; top: 58%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-15 { left: 39%; top: 73%; width: 1px; height: 1px; }
-        .portfolio-star-slot-16 { left: 48%; top: 61%; width: 2.5px; height: 2.5px; }
-        .portfolio-star-slot-17 { left: 57%; top: 78%; width: 1px; height: 1px; }
-        .portfolio-star-slot-18 { left: 66%; top: 67%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-19 { left: 74%; top: 83%; width: 1px; height: 1px; }
-        .portfolio-star-slot-20 { left: 82%; top: 63%; width: 2px; height: 2px; }
-        .portfolio-star-slot-21 { left: 90%; top: 76%; width: 1px; height: 1px; }
-        .portfolio-star-slot-22 { left: 6%; top: 84%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-23 { left: 26%; top: 88%; width: 1px; height: 1px; }
-        .portfolio-star-slot-24 { left: 54%; top: 90%; width: 2px; height: 2px; }
-        .portfolio-star-slot-25 { left: 14%; top: 42%; width: 1px; height: 1px; }
-        .portfolio-star-slot-26 { left: 36%; top: 36%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-27 { left: 46%; top: 82%; width: 1px; height: 1px; }
-        .portfolio-star-slot-28 { left: 63%; top: 44%; width: 1.5px; height: 1.5px; }
-        .portfolio-star-slot-29 { left: 79%; top: 54%; width: 1px; height: 1px; }
-        .portfolio-star-slot-30 { left: 95%; top: 58%; width: 2px; height: 2px; }
 
         .portfolio-project-card {
           position: relative;
@@ -589,7 +587,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           transform: translateY(-2px);
         }
       `}</style>
-      <StarField />
+      <StarField isDarkMode={isDarkMode} />
       <div className="relative z-10 flex w-full items-center gap-8 lg:gap-12 max-w-6xl">
         <div className="flex-1 max-w-md">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3">
@@ -619,7 +617,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           </p>
         </div>
 
-        <div className="hidden lg:flex flex-1 w-[320px] h-[320px] justify-center items-center">
+        <div className="flex flex-1 w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] lg:w-[320px] lg:h-[320px] justify-center items-center">
           <HaloRings
             opacity={ringsOpacity}
             isPulsing={isPulsing}
@@ -729,7 +727,12 @@ const ProjectCard = ({
   isVisible: boolean
   revealDelay: number
 }) => {
-  const isYugiohCard = project.title === 'Yugioh Database'
+  const hasHoverPreview =
+    project.title === 'Treact' ||
+    project.title === 'Titlescope' ||
+    project.title === 'Shalimar Cards' ||
+    project.title === 'NFT Marketplace' ||
+    project.title === 'Summarist'
   const hasLiveLink = Boolean(project.liveLink && project.liveLink !== '#')
   const hasGithubLink = Boolean(project.githubLink && project.githubLink !== '#')
   const [isLiveHovered, setIsLiveHovered] = useState(false)
@@ -743,7 +746,7 @@ const ProjectCard = ({
         isDarkMode
           ? 'border-slate-700 bg-slate-900 text-white shadow-sm hover:shadow-md'
           : 'border-slate-200 bg-white text-slate-900 shadow-sm hover:shadow-md'
-      } ${isYugiohCard ? 'overflow-hidden' : ''}`}
+      }`}
     >
       <div className="relative z-10">
         <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -776,9 +779,10 @@ const ProjectCard = ({
             onMouseEnter={() => setIsLiveHovered(true)}
             onMouseLeave={() => setIsLiveHovered(false)}
           >
-            {project.thumbnail && (
+            {hasHoverPreview && project.thumbnail && (
               <div
-                className={`pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 md:block ${isLiveHovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
+                className={`pointer-events-none absolute bottom-full left-0 z-40 mb-3 w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 ${isLiveHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
+                aria-hidden="true"
               >
                 <Image
                   src={project.thumbnail}
@@ -792,6 +796,8 @@ const ProjectCard = ({
             {hasLiveLink ? (
               <a
                 href={project.liveLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   isDarkMode
                     ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-400 active:bg-yellow-600 focus:ring-yellow-400 focus:ring-offset-slate-800'
@@ -820,9 +826,10 @@ const ProjectCard = ({
             onMouseEnter={() => setIsGithubHovered(true)}
             onMouseLeave={() => setIsGithubHovered(false)}
           >
-            {project.thumbnail && (
+            {hasHoverPreview && project.thumbnail && (
               <div
-                className={`pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 md:block ${isGithubHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
+                className={`pointer-events-none absolute bottom-full right-0 z-40 mb-3 w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 ${isGithubHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
+                aria-hidden="true"
               >
                 <Image
                   src={project.thumbnail}
@@ -836,6 +843,8 @@ const ProjectCard = ({
             {hasGithubLink ? (
               <a
                 href={project.githubLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`inline-flex items-center px-4 py-2 text-sm rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   isDarkMode
                     ? 'bg-slate-600 text-white hover:bg-slate-500 active:bg-slate-700 focus:ring-slate-400 focus:ring-offset-slate-800'
@@ -872,7 +881,7 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <section
       id="projects"
-      className={`relative py-20 px-4 sm:px-6 lg:px-8 ${
+      className={`relative pt-20 pb-12 px-4 sm:px-6 lg:px-8 ${
         isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-900'
       }`}
     >
@@ -949,7 +958,7 @@ const AboutSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <section
       id="about"
-      className={`py-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}
+      className={`pt-10 pb-14 px-4 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}
     >
       <div className="max-w-4xl mx-auto">
         <h2
@@ -965,11 +974,11 @@ const AboutSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           }`}
         >
           Self-taught frontend developer focused on React, Next.js, TypeScript, and modern web
-          development. I've completed 5 projects including Treact, Movie Project, Yugioh Database,
-          NFT Marketplace, and Summarist. Passionate about self-improvement, video games, and
-          becoming a business owner. Currently focused on learning diverse technologies to become a
-          successful software engineer and entrepreneur. I'm committed to building modern,
-          accessible web applications while constantly expanding my technical skillset.
+          development. I've completed 5 projects including Treact, Titlescope, Shalimar Cards, NFT
+          Marketplace, and Summarist. Passionate about self-improvement, video games, and becoming a
+          business owner. Currently focused on learning diverse technologies to become a successful
+          software engineer and entrepreneur. I'm committed to building modern, accessible web
+          applications while constantly expanding my technical skillset.
         </p>
         <div>
           <h3 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -1276,7 +1285,7 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
                 key={link.name}
                 href={link.url}
                 target={link.url.startsWith('http') ? '_blank' : undefined}
-                rel={link.url.startsWith('http') ? 'noreferrer' : undefined}
+                rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
                 className={`transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded px-2 py-1 ${
                   isDarkMode
                     ? 'text-slate-300 hover:text-yellow-300 focus:ring-yellow-400 focus:ring-offset-slate-950'
