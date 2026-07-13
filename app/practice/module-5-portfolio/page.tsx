@@ -160,6 +160,7 @@ const Header = ({
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
         <a
           href="/resume.pdf"
+          download="Josh_Van_Minsel_Resume.pdf"
           className="text-lg font-bold tracking-tight w-44 shrink-0 hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
           aria-label="Open resume"
         >
@@ -1254,6 +1255,9 @@ const ContactForm = ({ isDarkMode }: { isDarkMode: boolean }) => {
 // ===== Component: Footer =====
 
 const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
+  const opensInNewTab = (url: string) => url.startsWith('http') || url.endsWith('.pdf')
+  const isDownloadFile = (url: string) => url.endsWith('.pdf')
+
   const socialLinks = [
     { name: 'Email', url: 'mailto:jovanminsel@gmail.com', ariaLabel: 'Send an email' },
     { name: 'GitHub', url: 'https://github.com/LowesPubAldi', ariaLabel: 'Visit GitHub profile' },
@@ -1284,8 +1288,9 @@ const Footer = ({ isDarkMode }: { isDarkMode: boolean }) => {
               <a
                 key={link.name}
                 href={link.url}
-                target={link.url.startsWith('http') ? '_blank' : undefined}
-                rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                target={opensInNewTab(link.url) ? '_blank' : undefined}
+                rel={opensInNewTab(link.url) ? 'noopener noreferrer' : undefined}
+                download={isDownloadFile(link.url) ? 'Josh_Van_Minsel_Resume.pdf' : undefined}
                 className={`transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded px-2 py-1 ${
                   isDarkMode
                     ? 'text-slate-300 hover:text-yellow-300 focus:ring-yellow-400 focus:ring-offset-slate-950'
