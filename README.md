@@ -2,17 +2,19 @@
 
 Welcome to the FES GitHub Copilot Course practice repository! This workspace contains all the files you'll need to follow along with the course.
 
+## 🌐 Live Portfolio
+
+- [Module 5 Portfolio](https://fes-copilot-course-6nv4c98w2-shalimar-cards-projects.vercel.app/practice/module-5-portfolio#contact)
+
 ## 🚀 Getting Started
 
 1. **Install Prerequisites:**
-
    - Visual Studio Code (latest version)
    - GitHub Copilot extension
    - GitHub Copilot Chat extension
    - Node.js (v18 or higher)
 
 2. **Sign in to GitHub Copilot:**
-
    - Open VS Code
    - Sign in with your GitHub account when prompted
    - Verify the Copilot icon in the bottom-right status bar

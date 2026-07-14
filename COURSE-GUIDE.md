@@ -279,25 +279,21 @@ See `__tests__/example.test.tsx` for test examples.
 ## 🎓 Learning Tips
 
 1. **Read Before Accepting**
-
    - Don't blindly accept Copilot's suggestions
    - Understand what the code does
    - Ask `/explain` if unclear
 
 2. **Iterate and Refine**
-
    - First suggestion isn't always best
    - Use follow-up prompts to improve
    - Try different phrasing
 
 3. **Learn Patterns**
-
    - Notice how Copilot structures code
    - Recognize good patterns to reuse
    - Build your own mental library
 
 4. **Ask Questions**
-
    - Use Ask Mode liberally
    - "What are alternatives to this approach?"
    - "What could go wrong here?"
@@ -313,19 +309,17 @@ See `__tests__/example.test.tsx` for test examples.
 ## 🚀 Next Steps After Completing the Course
 
 1. **Deploy Your Portfolio**
-
    - Use Vercel: `npx vercel`
+   - Live portfolio: https://fes-copilot-course-6nv4c98w2-shalimar-cards-projects.vercel.app/practice/module-5-portfolio#contact
    - Use Netlify: Connect GitHub repo
    - Share your live portfolio!
 
 2. **Build Your Own Projects**
-
    - Apply techniques to real projects
    - Start with small features
    - Gradually increase complexity
 
 3. **Contribute to Open Source**
-
    - Use Copilot to understand unfamiliar codebases
    - Get onboarded faster
    - Contribute more confidently
@@ -363,28 +357,24 @@ If you're stuck:
 Track your progress through the course:
 
 - [ ] Module 1: Setup & Orientation
-
   - [ ] Installed Copilot extensions
   - [ ] Used `/explain` successfully
   - [ ] Understood Copilot suggestions
   - [ ] Memorized key shortcuts
 
 - [ ] Module 2: Core Agent Features
-
   - [ ] Fixed broken code with `/fix`
   - [ ] Built a feedback form
   - [ ] Generated tests with `/tests`
   - [ ] Had freeform conversations
 
 - [ ] Module 3: Inline Chat
-
   - [ ] Converted to async/await
   - [ ] Added accessibility features
   - [ ] Refactored complex code
   - [ ] Improved styling and performance
 
 - [ ] Module 4: Rules & Context
-
   - [ ] Created `.github/copilot-instructions.md`
   - [ ] Verified context awareness
   - [ ] Tested rule compliance
