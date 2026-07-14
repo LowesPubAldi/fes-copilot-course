@@ -15,7 +15,7 @@ import {
   SiFirebase,
 } from 'react-icons/si'
 import { MdPhoneIphone } from 'react-icons/md'
-import { FaCss3Alt, FaFlask, FaMousePointer } from 'react-icons/fa'
+import { FaCss3Alt, FaFlask, FaMousePointer, FaBars, FaTimes } from 'react-icons/fa'
 
 interface Project {
   id: number
@@ -152,21 +152,51 @@ const Header = ({
   toggleCursorMode: () => void
 }) => {
   const navLinks = ['Home', 'Projects', 'About', 'Contact']
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <header
-      className={`portfolio-breathe-bg fixed top-0 w-full shadow-lg z-50 ${isDarkMode ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white'}`}
+      className={`portfolio-breathe-bg fixed top-0 z-50 w-full shadow-lg ${isDarkMode ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white'}`}
     >
-      <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
+      <nav className="mx-auto flex w-full max-w-screen-2xl items-center px-3 py-4 sm:px-4 lg:px-6">
         <a
           href="/resume.pdf"
           download="Josh_Van_Minsel_Resume.pdf"
-          className="text-lg font-bold tracking-tight w-44 shrink-0 hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
+          className="shrink-0 whitespace-nowrap text-lg font-bold tracking-tight hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
           aria-label="Open resume"
         >
           Josh Van Minsel
         </a>
-        <ul className="hidden sm:flex gap-10 flex-1 justify-center">
+        <div className="ml-3 flex items-center gap-2 sm:hidden">
+          <button
+            onClick={toggleCursorMode}
+            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border leading-none transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-slate-900 ${
+              cursorMode === 'plasma'
+                ? 'border-cyan-400 text-cyan-200 hover:text-cyan-100 focus:ring-cyan-400'
+                : 'border-emerald-500 text-emerald-200 hover:text-emerald-100 focus:ring-emerald-400'
+            }`}
+            aria-label={`Switch to ${cursorMode === 'plasma' ? 'gun scope' : 'plasma pistol'} cursor`}
+          >
+            <FaMousePointer size={13} aria-hidden="true" />
+          </button>
+          <button
+            onClick={toggleDarkMode}
+            className="text-xl p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-slate-900 hover:text-yellow-300 focus:ring-yellow-400"
+            aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(open => !open)}
+          className="ml-auto inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 text-white transition-colors hover:border-cyan-300 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-1 focus:ring-offset-slate-900 sm:hidden"
+          aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-nav-drawer"
+        >
+          {isMobileMenuOpen ? <FaTimes aria-hidden="true" /> : <FaBars aria-hidden="true" />}
+        </button>
+        <ul className="hidden flex-1 justify-center gap-10 sm:flex">
           {navLinks.map(link => (
             <li key={link}>
               <a
@@ -179,7 +209,7 @@ const Header = ({
             </li>
           ))}
         </ul>
-        <div className="w-48 flex justify-end gap-2">
+        <div className="ml-auto hidden shrink-0 items-center gap-2 sm:flex">
           <button
             onClick={toggleCursorMode}
             className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border leading-none transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-slate-900 ${
@@ -200,6 +230,26 @@ const Header = ({
           </button>
         </div>
       </nav>
+      <div
+        id="mobile-nav-drawer"
+        className={`sm:hidden overflow-hidden border-t border-white/10 bg-slate-950/98 transition-[max-height,opacity] duration-300 ${
+          isMobileMenuOpen ? 'max-h-72 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="mx-auto flex max-w-screen-2xl flex-col gap-2 px-3 py-3">
+          {navLinks.map(link => (
+            <a
+              key={link}
+              href={`#${link.toLowerCase()}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="rounded-md border border-white/10 px-4 py-3 text-sm font-semibold uppercase tracking-[0.22em] text-white/90 transition-colors hover:border-cyan-300/40 hover:bg-white/5 hover:text-cyan-300"
+              aria-label={`Navigate to ${link}`}
+            >
+              {link}
+            </a>
+          ))}
+        </div>
+      </div>
     </header>
   )
 }
@@ -393,7 +443,11 @@ const HaloRings = ({
 }
 
 const StarField = ({ className = '', isDarkMode }: { className?: string; isDarkMode: boolean }) => {
-  const stars = Array.from({ length: 56 }, (_, index) => {
+  const formatPercent = (value: number) => `${value.toFixed(4)}%`
+  const formatPixels = (value: number) => `${value.toFixed(1)}px`
+  const formatSeconds = (value: number) => `${value.toFixed(3)}s`
+
+  const stars = Array.from({ length: 64 }, (_, index) => {
     const seed = index + 1
     const topSeed = ((seed * 53) % 100) / 100
     return {
@@ -410,9 +464,53 @@ const StarField = ({ className = '', isDarkMode }: { className?: string; isDarkM
       twinkleDelay: -((seed * 11) % 9),
     }
   })
+  const streaks = Array.from({ length: 16 }, (_, index) => {
+    const seed = index + 1
+    return {
+      id: `streak-${seed}`,
+      left: (seed * 73) % 100,
+      top: ((seed * 41) % 100) / 100,
+      width: 28 + ((seed * 19) % 28),
+      height: 1.2 + ((seed * 7) % 2) * 0.4,
+      driftX: 12 + ((seed * 11) % 10),
+      driftY: 1 + ((seed * 13) % 4),
+      driftDuration: 10 + ((seed * 17) % 14) / 2,
+      driftDelay: -((seed * 5) % 11),
+    }
+  })
+  const lightModeSpeedFactor = 0.82
+  const lightModeStarColor = 'rgba(15, 23, 42, 0.92)'
+  const lightModeStarGlow = 'rgba(15, 23, 42, 0.45)'
+  const lightModeStreakColor = 'rgba(15, 23, 42, 0.64)'
+  const lightModeStreakGlow = 'rgba(15, 23, 42, 0.26)'
 
   return (
     <div className={`portfolio-starfield z-0 ${className}`} aria-hidden="true">
+      {streaks.map(streak => (
+        <span
+          key={streak.id}
+          className="portfolio-star portfolio-star--streak"
+          style={
+            {
+              left: `${streak.left}%`,
+              top: formatPercent(streak.top * 100),
+              width: formatPixels(streak.width),
+              height: formatPixels(streak.height),
+              '--drift-x': formatPixels(streak.driftX),
+              '--drift-y': formatPixels(streak.driftY),
+              '--drift-duration': formatSeconds(
+                isDarkMode ? streak.driftDuration : streak.driftDuration * lightModeSpeedFactor
+              ),
+              '--twinkle-duration': formatSeconds(7.5),
+              '--drift-delay': `${streak.driftDelay.toFixed(0)}s`,
+              '--twinkle-delay': '0s',
+              '--star-color': isDarkMode ? 'rgba(226, 232, 240, 0.36)' : lightModeStreakColor,
+              '--star-glow': isDarkMode ? 'rgba(148, 163, 184, 0.18)' : lightModeStreakGlow,
+              opacity: isDarkMode ? 0.5 : 0.78,
+            } as React.CSSProperties
+          }
+        />
+      ))}
       {stars.map(star => (
         <span
           key={star.id}
@@ -420,17 +518,21 @@ const StarField = ({ className = '', isDarkMode }: { className?: string; isDarkM
           style={
             {
               left: `${star.left}%`,
-              top: `${star.top}%`,
-              width: `${star.size}px`,
-              height: `${star.size}px`,
-              '--drift-x': `${star.driftX}px`,
-              '--drift-y': `${star.driftY}px`,
-              '--drift-duration': `${star.driftDuration}s`,
-              '--twinkle-duration': `${star.twinkleDuration}s`,
-              '--drift-delay': `${star.driftDelay}s`,
-              '--twinkle-delay': `${star.twinkleDelay}s`,
-              '--star-color': isDarkMode ? 'rgba(226, 232, 240, 0.96)' : 'rgba(37, 99, 235, 1)',
-              '--star-glow': isDarkMode ? 'rgba(148, 163, 184, 0.85)' : 'rgba(59, 130, 246, 0.81)',
+              top: formatPercent(star.top),
+              width: formatPixels(star.size),
+              height: formatPixels(star.size),
+              '--drift-x': formatPixels(star.driftX),
+              '--drift-y': formatPixels(star.driftY),
+              '--drift-duration': formatSeconds(
+                isDarkMode ? star.driftDuration : star.driftDuration * lightModeSpeedFactor
+              ),
+              '--twinkle-duration': formatSeconds(
+                isDarkMode ? star.twinkleDuration : star.twinkleDuration * lightModeSpeedFactor
+              ),
+              '--drift-delay': `${star.driftDelay.toFixed(0)}s`,
+              '--twinkle-delay': `${star.twinkleDelay.toFixed(0)}s`,
+              '--star-color': isDarkMode ? 'rgba(226, 232, 240, 0.96)' : lightModeStarColor,
+              '--star-glow': isDarkMode ? 'rgba(148, 163, 184, 0.85)' : lightModeStarGlow,
             } as React.CSSProperties
           }
         />
@@ -505,7 +607,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
     <section
       ref={heroSectionRef}
       id="home"
-      className={`portfolio-breathe-bg relative min-h-[100svh] pt-20 pb-14 px-4 sm:px-6 lg:px-8 text-left ${
+      className={`portfolio-breathe-bg relative min-h-[100svh] md:max-lg:min-h-[88svh] lg:min-h-[100svh] pt-20 pb-14 px-4 sm:px-6 lg:px-8 text-left ${
         isDarkMode
           ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white'
           : 'bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 text-slate-900'
@@ -564,6 +666,18 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           pointer-events: none;
         }
 
+        .portfolio-starfield::before {
+          content: '';
+          position: absolute;
+          inset: -10%;
+          background:
+            radial-gradient(circle at 20% 25%, rgba(30, 41, 59, 0.24), transparent 30%),
+            radial-gradient(circle at 80% 18%, rgba(15, 23, 42, 0.2), transparent 28%),
+            radial-gradient(circle at 50% 70%, rgba(71, 85, 105, 0.13), transparent 34%);
+          opacity: 0.84;
+          animation: breatheBackground 28s ease-in-out infinite;
+        }
+
         .portfolio-star {
           position: absolute;
           display: block;
@@ -578,6 +692,13 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           animation-direction: alternate, alternate;
         }
 
+        .portfolio-star--streak {
+          border-radius: 9999px;
+          filter: blur(0.8px);
+          transform-origin: center;
+          mix-blend-mode: screen;
+        }
+
         .portfolio-project-card {
           position: relative;
           transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease, background-color 200ms ease;
@@ -589,13 +710,13 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
         }
       `}</style>
       <StarField isDarkMode={isDarkMode} />
-      <div className="relative z-10 flex w-full items-center gap-8 lg:gap-12 max-w-6xl">
-        <div className="flex-1 max-w-md">
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-10 text-center md:gap-12 lg:flex-row lg:items-center lg:gap-12 lg:text-left">
+        <div className="flex w-full max-w-2xl flex-col items-center lg:max-w-md lg:items-start">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3">
             Hi, I'm Josh Van Minsel
           </h1>
           <p
-            className={`text-base sm:text-lg mb-6 max-w-md ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}
+            className={`mb-6 max-w-xl text-base sm:text-lg ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}
           >
             Building modern, accessible web applications with React, TypeScript, and Tailwind CSS
           </p>
@@ -610,15 +731,13 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
             Get In Touch
           </a>
           <p
-            className={`mt-4 text-sm sm:text-base font-medium tracking-wide ${
-              isDarkMode ? 'text-slate-400' : 'text-slate-600'
-            }`}
+            className={`mt-4 text-sm sm:text-base font-medium tracking-wide ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}
           >
             Open to freelance, contract, and junior frontend roles.
           </p>
         </div>
 
-        <div className="flex flex-1 w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] lg:w-[320px] lg:h-[320px] justify-center items-center">
+        <div className="flex h-[240px] w-[240px] items-center justify-center sm:h-[280px] sm:w-[280px] md:h-[320px] md:w-[320px] lg:h-[360px] lg:w-[360px]">
           <HaloRings
             opacity={ringsOpacity}
             isPulsing={isPulsing}
@@ -627,7 +746,7 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           />
         </div>
       </div>
-      <div id="hero-timeline" className="relative z-10 mt-2 w-full max-w-6xl">
+      <div id="hero-timeline" className="relative z-10 mx-auto mt-2 w-full max-w-6xl">
         <p
           className={`mb-2 text-xs sm:text-sm uppercase tracking-[0.22em] ${
             isDarkMode ? 'text-slate-500' : 'text-slate-500'
@@ -635,15 +754,15 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
         >
           Project Timeline
         </p>
-        <div className="relative overflow-hidden pt-1 sm:pt-2">
+        <div className="relative overflow-hidden pt-1 sm:pt-2 lg:pt-4">
           <div
-            className={`absolute left-0 right-0 top-4 h-px ${
+            className={`absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 ${
               isDarkMode ? 'bg-slate-700/60' : 'bg-slate-400/70'
             }`}
             aria-hidden="true"
           />
           <div
-            className="absolute right-0 top-4 flex -translate-y-1/2 items-center"
+            className="absolute right-0 top-1/2 hidden -translate-y-1/2 items-center sm:flex"
             aria-hidden="true"
           >
             <span className={`h-px w-4 ${isDarkMode ? 'bg-slate-700/60' : 'bg-slate-400/70'}`} />
@@ -655,31 +774,30 @@ const HeroSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
           </div>
           <ul className="grid grid-cols-1 gap-8 sm:grid-cols-5 sm:gap-0">
             {projects.map((project, index) => {
-              const isTopRow = index % 2 === 0
-              const dotToneClass =
-                index % 2 === 0
-                  ? isDarkMode
-                    ? 'border-slate-950 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.45)]'
-                    : 'border-slate-100 bg-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.35)]'
-                  : isDarkMode
-                    ? 'border-slate-950 bg-emerald-400 shadow-[0_0_10px_rgba(45,106,79,0.4)]'
-                    : 'border-slate-100 bg-emerald-500 shadow-[0_0_10px_rgba(45,106,79,0.3)]'
+              const isTopRow = project.title === 'Titlescope' || project.title === 'NFT Marketplace'
+              const dotToneClass = isTopRow
+                ? isDarkMode
+                  ? 'border-slate-950 bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.45)]'
+                  : 'border-slate-100 bg-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.35)]'
+                : isDarkMode
+                  ? 'border-slate-950 bg-emerald-400 shadow-[0_0_10px_rgba(45,106,79,0.4)]'
+                  : 'border-slate-100 bg-emerald-500 shadow-[0_0_10px_rgba(45,106,79,0.3)]'
 
               return (
-                <li key={project.id} className="relative flex justify-center sm:min-h-[11rem]">
+                <li key={project.id} className="relative flex justify-center sm:h-[12.5rem]">
                   <span
-                    className={`absolute left-1/2 top-4 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${dotToneClass}`}
+                    className={`hidden sm:block absolute left-1/2 top-1/2 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ${dotToneClass}`}
                     aria-hidden="true"
                   />
                   <span
-                    className={`hidden sm:block absolute left-1/2 top-4 w-px -translate-x-1/2 ${
-                      isTopRow ? 'h-8 -translate-y-full' : 'h-8'
+                    className={`hidden sm:block absolute left-1/2 top-1/2 w-px -translate-x-1/2 ${
+                      isTopRow ? 'h-10 -translate-y-full' : 'h-8'
                     } ${isDarkMode ? 'bg-slate-600/70' : 'bg-slate-500/70'}`}
                     aria-hidden="true"
                   />
                   <div
                     className={`w-full max-w-[14rem] text-center sm:absolute sm:left-1/2 sm:-translate-x-1/2 ${
-                      isTopRow ? 'sm:bottom-8' : 'sm:top-8'
+                      isTopRow ? 'sm:bottom-[58%]' : 'sm:top-[58%]'
                     }`}
                   >
                     <div
@@ -882,7 +1000,7 @@ const ProjectsSection = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <section
       id="projects"
-      className={`relative pt-20 pb-12 px-4 sm:px-6 lg:px-8 ${
+      className={`relative pt-20 md:max-lg:pt-12 lg:pt-20 pb-12 px-4 sm:px-6 lg:px-8 ${
         isDarkMode ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-900'
       }`}
     >
