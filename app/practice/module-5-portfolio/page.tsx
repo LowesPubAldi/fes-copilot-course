@@ -856,11 +856,37 @@ const ProjectCard = ({
   const hasGithubLink = Boolean(project.githubLink && project.githubLink !== '#')
   const [isLiveHovered, setIsLiveHovered] = useState(false)
   const [isGithubHovered, setIsGithubHovered] = useState(false)
+  const [supportsHoverPreview, setSupportsHoverPreview] = useState(true)
+  const [isTouchPreviewVisible, setIsTouchPreviewVisible] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+
+    const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const updateHoverSupport = () => {
+      setSupportsHoverPreview(mediaQuery.matches)
+    }
+
+    updateHoverSupport()
+    mediaQuery.addEventListener('change', updateHoverSupport)
+
+    return () => {
+      mediaQuery.removeEventListener('change', updateHoverSupport)
+    }
+  }, [])
+
+  const showInlineTouchPreview =
+    !supportsHoverPreview && hasHoverPreview && Boolean(project.thumbnail) && isTouchPreviewVisible
 
   return (
     <div
       data-delay={revealDelay}
       data-visible={isVisible ? 'true' : 'false'}
+      onClick={event => {
+        if (supportsHoverPreview || !hasHoverPreview || !project.thumbnail) return
+        if ((event.target as HTMLElement).closest('a')) return
+        setIsTouchPreviewVisible(visible => !visible)
+      }}
       className={`portfolio-project-card group relative z-10 rounded-lg border p-6 hover:z-30 focus-within:z-30 ${
         isDarkMode
           ? 'border-slate-700 bg-slate-900 text-white shadow-sm hover:shadow-md'
@@ -892,13 +918,28 @@ const ProjectCard = ({
             ))}
           </div>
         </div>
+        {showInlineTouchPreview && project.thumbnail && (
+          <div
+            className={`mb-4 overflow-hidden rounded-md border shadow-lg ${
+              isDarkMode ? 'border-slate-700 bg-slate-950' : 'border-slate-300 bg-slate-950'
+            }`}
+          >
+            <Image
+              src={project.thumbnail}
+              alt={`${project.title} preview`}
+              width={1200}
+              height={630}
+              className="h-44 w-full object-cover"
+            />
+          </div>
+        )}
         <div className="mt-auto flex items-center gap-4 pt-4">
           <div
             className="relative inline-flex items-center"
             onMouseEnter={() => setIsLiveHovered(true)}
             onMouseLeave={() => setIsLiveHovered(false)}
           >
-            {hasHoverPreview && project.thumbnail && (
+            {supportsHoverPreview && hasHoverPreview && project.thumbnail && (
               <div
                 className={`pointer-events-none absolute bottom-full left-0 z-40 mb-3 w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 ${isLiveHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
                 aria-hidden="true"
@@ -945,7 +986,7 @@ const ProjectCard = ({
             onMouseEnter={() => setIsGithubHovered(true)}
             onMouseLeave={() => setIsGithubHovered(false)}
           >
-            {hasHoverPreview && project.thumbnail && (
+            {supportsHoverPreview && hasHoverPreview && project.thumbnail && (
               <div
                 className={`pointer-events-none absolute bottom-full right-0 z-40 mb-3 w-56 overflow-hidden rounded-md border border-slate-300 bg-slate-950/95 shadow-xl transition-all duration-200 ${isGithubHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
                 aria-hidden="true"
